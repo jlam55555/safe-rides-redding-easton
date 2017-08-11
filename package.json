@@ -1,0 +1,14 @@
+{
+  "name": "safe-rides-redding-easton",
+  "description": "Safe volunteer ride service for students in the ER9 region",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://git.heroku.com/safe-rides-redding-easton.git"
+  },
+  "dependencies": {
+    "express": "4.15.4",
+    "pg-promise": "5.9.3"
+  },
+  "license": "MIT"
+}
