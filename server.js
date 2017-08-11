@@ -77,8 +77,8 @@ app.post("/signup", function(req, res) {
     res.json({success: false, error: 4});
     return;
   }
-  // error code 5: phone validation
-  if(phone.length !== 10 && phone.length !== 11) {
+  // error code 5: phone validation (too long or short or non-digits)
+  if(phone.length !== 10 && phone.length !== 11 || isNaN(phone)) {
     res.json({success: false, error: 5});
     return;
   }

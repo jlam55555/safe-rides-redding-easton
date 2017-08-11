@@ -10,7 +10,7 @@ $(function() {
       name: name,
       phone: phone
     }, function(data) {
-      console.log(data);
+      alert(data.success ? "Success" : data.error);
     });
   });
 });
