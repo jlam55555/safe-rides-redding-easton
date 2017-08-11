@@ -84,15 +84,14 @@ app.post("/signup", function(req, res) {
   }
 
   // create account
-  db.one("INSERT INTO users (email, name, password, phone) VALUES ('" + email + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
-    .then(function(data) {
-      console.log(data);
+  db.none("INSERT INTO users (email, name, password, phone) VALUES ('" + email + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
+    .then(function() {
+      console.log(name + " signed up under email "  + email + ".");
       // sign in session
       req.session.email = email;
       res.json({success: true});
     })
     .catch(function(err) {
-      console.log(err);
       // error code 6: email taken
       res.json({success: false, error: 6});
     });
@@ -108,5 +107,5 @@ app.get("/signout", function(req, res) {
 app.use("/", express.static("public"));
 
 app.listen(process.env.PORT || 5000, function() {
-  console.log("Listening on port " + (process.env.PORT || 5000));
+  console.log("Listening on port " + (process.env.PORT || 5000) + ".");
 });
