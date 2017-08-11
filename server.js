@@ -84,7 +84,7 @@ app.post("/signup", function(req, res) {
   }
 
   // create account
-  db.one("INSERT INTO users (email, name, pass, phone) VALUES ('" + email + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
+  db.one("INSERT INTO users (email, name, password, phone) VALUES ('" + email + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
     .then(function(data) {
       console.log(data);
       // sign in session
