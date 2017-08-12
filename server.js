@@ -35,17 +35,21 @@ app.use(session({
 // post requests
 app.post("/getUserDetails", function(req, res) {
   var ssn = req.session;
-  db.one("SELECT name, phone FROM users WHERE email='" + ssn.email + "'")
-    .then(function(data) {
-      res.json({
-        email: ssn.email,
-        phone: data.phone,
-        name: data.name
+  if(ssn) {
+    db.one("SELECT name, phone FROM users WHERE email='" + ssn.email + "'")
+      .then(function(data) {
+        res.json({
+          email: ssn.email,
+          phone: data.phone,
+          name: data.name
+        });
+      })
+      .catch(function(err) {
+        console.log(err);
       });
-    })
-    .catch(function(err) {
-      console.log(err);
-    });
+  } else {
+    res.json({email: false});
+  }
 });
 
 // routing

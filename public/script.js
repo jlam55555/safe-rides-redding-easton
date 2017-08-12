@@ -1,4 +1,8 @@
 $(function() {
+  $.post("/getUserDetails", function(data) {
+    alert(JSON.stringify(data));
+  }, "json")
+
   $("#signupSubmit").click(function() {
     var email = $("#signupEmail").val().toLowerCase();
     var password = $("#signupPassword").val();
@@ -34,6 +38,6 @@ $(function() {
         }
         alert("Error: " + error);
       } else alert("Success");
-    });
+    }, "json");
   });
 });
