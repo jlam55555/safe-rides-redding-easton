@@ -1,14 +1,25 @@
 $(function() {
 
-  // check if signed in or not
+  // for use when signing in/out
   var signedInElements = $(".signedIn");
   var signedOutElements = $(".signedOut");
   signedInElements.hide();
+  function toggleSignedIn(signedIn) {
+    if(signedIn) {
+      signedInElements.show();
+      signedOutElements.hide();
+    } else {
+      signedInElements.hide();
+      signedOutElements.show();
+    }
+  }
+  $("#signout").click(toggleSignedIn.bind(null, false));
+
+  // check if signed in or not
   $.post("/getUserDetails", function(data) {
     if(data.email !== false) {
       console.log("Signed in");
-      signedInElements.show();
-      signedOutElements.hide();
+      toggleSignedIn(true);
     } else {
       console.log("Signed out");
     }
@@ -49,7 +60,9 @@ $(function() {
             break;
         }
         console.log("Sign up error: " + error);
-      } else console.log("Sign up success");
+      } else {
+        toggleSignedIn(true);
+      }
     }, "json");
   });
 
@@ -72,7 +85,9 @@ $(function() {
             break;
         }
         console.log("Sign in error: " + error);
-      } else console.log("Sign in success");
+      } else {
+        toggleSignedIn(true);
+      }
     }, "json");
   });
 });
