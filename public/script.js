@@ -1,8 +1,14 @@
 $(function() {
+
   // check if signed in or not
+  var signedInElements = $(".signedIn");
+  var signedOutElements = $(".signedOut");
+  signedInElements.hide();
   $.post("/getUserDetails", function(data) {
     if(data.email !== false) {
       console.log("Signed in");
+      signedInElements.show();
+      signedOutElements.hide();
     } else {
       console.log("Signed out");
     }
@@ -43,7 +49,7 @@ $(function() {
             break;
         }
         console.log("Sign up error: " + error);
-      } else alert("Sign up success");
+      } else console.log("Sign up success");
     }, "json");
   });
 
@@ -65,8 +71,8 @@ $(function() {
             error = "Password does not match.";
             break;
         }
-        console.log("Error: " + error);
-      } else console.log("Success");
+        console.log("Sign in error: " + error);
+      } else console.log("Sign in success");
     }, "json");
   });
 });
