@@ -18,7 +18,7 @@ $(function() {
     toggleSignedIn(true);
     $("#profileName").text(name);
     $("#profileEmail").text(email);
-    formattedPhone = (phone.length === 11 ? phone.slice(0, 1) + " " : "") "(" phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
+    formattedPhone = (phone.length === 11 ? phone.slice(0, 1) + " " : "") + "(" + phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
     $("#profilePhone").text(formattedPhone);
   }
 
