@@ -107,7 +107,7 @@ app.post("/signin", function(req, res) {
     .then(function(data) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
-        res.json({success: true});
+        res.json({success: true, phone: data.phone, name: data.name});
       } else {
         // error code 2: incorrect password
         res.json({success: false, error: 2});

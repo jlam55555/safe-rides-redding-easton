@@ -13,6 +13,15 @@ $(function() {
       signedOutElements.show();
     }
   }
+
+  function signIn(email, name, phone) {
+    toggleSignedIn(true);
+    $("#profileName").text(name);
+    $("#profileEmail").text(email);
+    formattedPhone = (phone.length === 11 ? phone.slice(0, 1) + " " : "") "(" phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
+    $("#profilePhone").text(formattedPhone);
+  }
+
   $("#signout").click(function() {
     $.post("/signout");
     toggleSignedIn(false);
@@ -23,7 +32,7 @@ $(function() {
   $.post("/getUserDetails", function(data) {
     if(data.email !== false) {
       console.log("Signed in");
-      toggleSignedIn(true);
+      signIn(data.email, data.name, data.phone);
     } else {
       console.log("Signed out");
     }
@@ -66,7 +75,7 @@ $(function() {
         console.log("Sign up error: " + error);
         $("#signupError").text("Error: " + error);
       } else {
-        toggleSignedIn(true);
+        signIn(email, name, phone);
       }
     }, "json");
   });
@@ -92,7 +101,7 @@ $(function() {
         console.log("Sign in error: " + error);
         $("#signinError").text("Error: " + error);
       } else {
-        toggleSignedIn(true);
+        signIn(email, data.name, data.phone);
         console.log("Signed in success");
       }
     }, "json");
