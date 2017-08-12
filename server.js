@@ -119,10 +119,9 @@ app.post("/signin", function(req, res) {
       res.json({success: false, error: 1})
     });
 });
-app.get("/signout", function(req, res) {
+app.post("/signout", function(req, res) {
   // sign out and return to homepage
   req.session.destroy();
-  res.redirect("/");
 });
 app.use("/", express.static("public"));
 
