@@ -117,7 +117,7 @@ app.post("/signin", function(req, res) {
       console.log(err);
       // error code 1: email not found
       res.json({success: false, error: 1})
-    };
+    });
 });
 app.get("/signout", function(req, res) {
   // sign out and return to homepage
