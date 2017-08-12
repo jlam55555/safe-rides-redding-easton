@@ -20,7 +20,7 @@ Database table USERS structure:
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 // reset database (for development purposes only)
-//db.none("DROP TABLE users;CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50), password VARCHAR(64), phone VARCHAR(11))").then(function(data){console.log(data)}).catch(function(err){console.log(err)});
+db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50), password VARCHAR(64), phone VARCHAR(11))").catch(function(err){console.log(err)});
 
 // other dependencies for password hashing, sessions
 var passwordHash = require("password-hash");
