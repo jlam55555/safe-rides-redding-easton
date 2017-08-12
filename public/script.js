@@ -1,4 +1,23 @@
 $(function() {
+  // tab details
+  var currentTab = 1;
+  $(".menuButton").click(function() {
+    var tabId = $(this).data("tab-id");
+    $(".menuButton").removeClass("selected");
+    $(".menuButton").each(function() {
+      if($(this).data("tab-id") === tabId) {
+        $(this).addClass("selected");
+      }
+    })
+    $(".tab").each(function() {
+      if($(this).data("tab-id") === tabId) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+  $(".menuButton").first().click();
 
   // for use when signing in/out
   var signedInElements = $(".signedIn");
