@@ -16,6 +16,7 @@ $(function() {
   $("#signout").click(function() {
     $.post("/signout");
     toggleSignedIn(false);
+    console.log("Signed out successfully");
   });
 
   // check if signed in or not
@@ -26,7 +27,7 @@ $(function() {
     } else {
       console.log("Signed out");
     }
-  }, "json")
+  }, "json");
 
   // signup form details
   $("#signupSubmit").click(function() {
@@ -63,6 +64,7 @@ $(function() {
             break;
         }
         console.log("Sign up error: " + error);
+        $("#signupError").text("Error: " + error);
       } else {
         toggleSignedIn(true);
       }
@@ -88,8 +90,10 @@ $(function() {
             break;
         }
         console.log("Sign in error: " + error);
+        $("#signinError").text("Error: " + error);
       } else {
         toggleSignedIn(true);
+        console.log("Signed in success");
       }
     }, "json");
   });
