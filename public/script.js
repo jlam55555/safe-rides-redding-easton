@@ -18,6 +18,9 @@ $(function() {
     });
   });
   $(".menuButton").first().click();
+  $(".changeTab").click(function() {
+    $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
+  });
 
   // for use when signing in/out
   var signedInElements = $(".signedIn");
