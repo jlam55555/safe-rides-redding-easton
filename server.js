@@ -99,8 +99,25 @@ app.post("/signup", function(req, res) {
       res.json({success: false, error: 6});
     });
 });
-app.post("/login", function(req, res) {
-  
+app.post("/signin", function(req, res) {
+  var email = req.body.email;
+  var password = req.body.password;
+
+  db.one("SELECT password FROM users WHERE email='" + email + "'")
+    .then(function(data) {
+      if(passwordHash.verify(password, data.password) {
+        req.session.email = email;
+        res.json({success: true});
+      } else {
+        // error code 2: incorrect password
+        res.json({success: false, error: 2});
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      // error code 1: email not found
+      res.json({success: false, error: 1})
+    };
 });
 app.get("/signout", function(req, res) {
   // sign out and return to homepage

@@ -1,4 +1,5 @@
 $(function() {
+  // check if signed in or not
   $.post("/getUserDetails", function(data) {
     if(data.email !== false) {
       console.log("Signed in");
@@ -7,6 +8,7 @@ $(function() {
     }
   }, "json")
 
+  // signup form details
   $("#signupSubmit").click(function() {
     var email = $("#signupEmail").val().toLowerCase();
     var password = $("#signupPassword").val();
@@ -42,6 +44,29 @@ $(function() {
         }
         console.log("Sign up error: " + error);
       } else alert("Sign up success");
+    }, "json");
+  });
+
+  // sign in form details
+  $("#signinSubmit").click(function() {
+    var email = $("#signinEmail").val().toLowerCase();
+    var password = $("#signinPassword").val();
+    $.post("/signin", {
+      email: email,
+      password: password
+    }, function(data) {
+      if(!data.success) {
+        var error;
+        switch(data.error) {
+          case 1:
+            error = "Email not found.";
+            break;
+          case 2:
+            error = "Password does not match.";
+            break;
+        }
+        console.log("Error: " + error);
+      } else console.log("Success");
     }, "json");
   });
 });
