@@ -68,7 +68,7 @@ app.post("/signup", function(req, res) {
     return;
   }
   // error code 3: name validation (invalid characters in name)
-  if(/[^a-zA-Z- ]/.exec(name)) {
+  if(/[^a-zA-Z\-\' ]/.exec(name)) {
     res.json({success: false, error: 3});
     return;
   }
@@ -84,7 +84,7 @@ app.post("/signup", function(req, res) {
   }
 
   // create account
-  db.none("INSERT INTO users (email, name, password, phone) VALUES ('" + email + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
+  db.none("INSERT INTO users (email, name, password, phone) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
     .then(function() {
       console.log(name + " signed up under email "  + email + ".");
       // sign in session
