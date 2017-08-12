@@ -1,6 +1,10 @@
 $(function() {
   $.post("/getUserDetails", function(data) {
-    alert(JSON.stringify(data));
+    if(data.email !== false) {
+      console.log("Signed in");
+    } else {
+      console.log("Signed out");
+    }
   }, "json")
 
   $("#signupSubmit").click(function() {
@@ -36,8 +40,8 @@ $(function() {
             error = "Email address is already in use.";
             break;
         }
-        alert("Error: " + error);
-      } else alert("Success");
+        console.log("Sign up error: " + error);
+      } else alert("Sign up success");
     }, "json");
   });
 });

@@ -103,9 +103,9 @@ app.post("/login", function(req, res) {
   
 });
 app.get("/signout", function(req, res) {
-  // sign out
+  // sign out and return to homepage
   req.session.destroy();
-  req.redirect("/");
+  res.redirect("/");
 });
 app.use("/", express.static("public"));
 
