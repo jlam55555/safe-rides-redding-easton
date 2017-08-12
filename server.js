@@ -103,7 +103,7 @@ app.post("/signin", function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
 
-  db.one("SELECT password FROM users WHERE email='" + email + "'")
+  db.one("SELECT phone, name, password FROM users WHERE email='" + email + "'")
     .then(function(data) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
