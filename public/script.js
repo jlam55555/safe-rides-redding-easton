@@ -13,7 +13,10 @@ $(function() {
       signedOutElements.show();
     }
   }
-  $("#signout").click(toggleSignedIn.bind(null, false));
+  $("#signout").click(function() {
+    $.post("/signout");
+    toggleSignedIn(false);
+  });
 
   // check if signed in or not
   $.post("/getUserDetails", function(data) {
