@@ -105,7 +105,7 @@ app.post("/signin", function(req, res) {
 
   db.one("SELECT password FROM users WHERE email='" + email + "'")
     .then(function(data) {
-      if(passwordHash.verify(password, data.password) {
+      if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
         res.json({success: true});
       } else {
