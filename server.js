@@ -61,7 +61,10 @@ for(var i = 0; i < 30; i++) {
   }
   dateIterator = new Date(dateIterator.valueOf() + 86400000);
 }
-fs.writeFile("./volunteers.json", JSON.stringify(calendar));
+fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
+  if(err)
+    console.log(err);
+});
 app.post("/getCalendar", function(req, res) {
   res.json(calendar);
 });
@@ -95,7 +98,11 @@ app.post("/addTime", function(req, res) {
     }
   }
   calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
-  fs.writeFile("./volunteers.json", JSON.stringify(calendar));
+  fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
+    if(err) {
+      console.log(err);
+    }
+  });
   res.json({success: true});
 });
 
