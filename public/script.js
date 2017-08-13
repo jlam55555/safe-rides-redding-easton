@@ -44,7 +44,9 @@ $(function() {
     $("#calendarHours").append($("<div/>").text(("0"+i).slice(-2) + ":00").addClass("calendarHour striped"));
     $("#calendarVolunteers").append($("<div/>").addClass("volunteerStripes striped").html("&#8203;"));
   }
+  var currentDate;
   function setCalendar(date) {
+    var currentDate = date;
     var calendarHourHeight = parseInt($("#content").css("font-size"));
     $("#calendarDays").height(calendarHourHeight * 24);
     $(".volunteer").remove();
@@ -121,7 +123,9 @@ $(function() {
       console.log(startIndex, endIndex);
       selectionElement.remove();
 
-      /* WORKING HERE */
+      $.post("/addTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
+        alert(JSON.stringify(data));
+      });
 
       $(document).off("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $("#addTime").removeClass("selected");

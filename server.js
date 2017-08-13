@@ -65,6 +65,40 @@ fs.writeFile("./volunteers.json", JSON.stringify(calendar));
 app.post("/getCalendar", function(req, res) {
   res.json(calendar);
 });
+app.post("/addTime", function(req, res) {
+  // error code 1: not logged in
+  if(req.session.email === undefined) {
+    res.json({success: false, error: 1});
+    return;
+  }
+  var email = req.session.email;
+  var date = req.body.date;
+  var start = req.body.start;
+  var end = req.body.end;
+  // error code 2: invalid data
+  if(start >= end || start < 0 || end > 23) {
+    res.json({success: false, error: 2});
+  }
+  for(var i = 0; i < calendar[date].length; i++) {
+    if(calendar[date][i].email === email) {
+      if(
+        (calendar[date][i].start <= start && calendar[date][i].end >= start)
+        || (calendar[date][i].start <= end && calendar[date][i].end >= end)
+        || (calendar[date][i].start >= start && calendar[date][i].end <= end)
+      ) {
+        start = Math.min(calendar[date][i].start, start);
+        end = Math.max(calendar[date][i].end, end);
+        calendar[date].splice(i, 1);
+        i--;
+      }
+    }
+  }
+  calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
+
+  // write to calendar file here!
+
+  res.json({success: true});
+});
 
 // routing
 app.post("/signup", function(req, res) {
@@ -122,6 +156,7 @@ app.post("/signin", function(req, res) {
     .then(function(data) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
+        req.session.name = data.name;
         res.json({success: true, phone: data.phone, name: data.name});
       } else {
         // error code 2: incorrect password
