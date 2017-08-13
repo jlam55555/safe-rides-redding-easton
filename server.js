@@ -101,6 +101,8 @@ app.post("/addTime", function(req, res) {
   fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
     if(err) {
       console.log(err);
+    } else {
+      console.log("successful write of " + JSON.stringify(calendar));
     }
   });
   res.json({success: true});
