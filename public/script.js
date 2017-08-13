@@ -46,7 +46,7 @@ $(function() {
   }
   var currentDate;
   function setCalendar(date) {
-    var currentDate = date;
+    currentDate = date;
     var calendarHourHeight = parseInt($("#content").css("font-size"));
     $("#calendarDays").height(calendarHourHeight * 24);
     $(".volunteer").remove();
