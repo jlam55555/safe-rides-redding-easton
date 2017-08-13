@@ -80,6 +80,42 @@ $(function() {
   $(".calendarDay").click(function() {
     setCalendar($(this).text())
   });
+  $("#addTime").click(function() {
+    $(this).addClass("selected");
+    var startX;
+    var startY;
+    var volunteerOffsetX = $("#calendarVolunteers")[0].offsetLeft;
+    var volunteerOffsetY = $("#calendarVolunteers")[0].offsetTop;
+    var selectionElement = $("<div/>").attr("id", "selectionElement");
+    $("#calendarVolunteers").append(selectionElement);
+    var em = parseInt($("#content").css("font-size"));
+    function addTimeMousedownHandler(event) {
+      startX = event.pageX - volunteerOffsetX;
+      startY = event.pageY - volunteerOffsetY + $("#content").scrollTop();
+      selectionElement.css({
+        top: startY,
+        left: startX,
+        width: em,
+        height: em
+      });
+      $(document).on("mousemove", "#calendarVolunteers, #calendarHours",  addTimeMousemoveHandler);
+    }
+    function addTimeMousemoveHandler(event) {
+      selectionElement.css({
+        top: startY,
+        left: startX,
+        width: Math.max(em, event.pageX - volunteerOffsetX - startX),
+        height: Math.max(em, event.pageY - volunteerOffsetY + $("#content").scrollTop() - startY)
+      });
+      $(document).one("mouseup", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
+    }
+    function addTimeMouseupHandler(event) {
+      console.log("mouseup", event.pageX, event.pageY);
+      $(document).off("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+      $("#addTime").removeClass("selected");
+    }
+    $(document).one("mousedown", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
+  });
 
   // for use when signing in/out
   var signedInElements = $(".signedIn");

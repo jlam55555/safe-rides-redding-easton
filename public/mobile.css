@@ -121,3 +121,10 @@ body {
   height: 3em;
   line-height: 1em;
 }
+#addTime.selected {
+  background-color: darkgrey;
+}
+#selectionElement {
+  position: absolute;
+  background-color: darkgrey;
+}
