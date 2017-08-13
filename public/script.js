@@ -71,7 +71,7 @@ $(function() {
         .html("<strong>" + $(this).data("name") + "</strong><br>" + ("0"+$(this).data("start")).slice(-2) + ":00-" + ("0"+$(this).data("end")).slice(-2) + ":59")
         .addClass("volunteerInfo")
         .css({
-          top: event.pageY - $("#calendarVolunteers")[0].offsetTop,
+          top: event.pageY - $("#calendarVolunteers")[0].offsetTop + $("#content").scrollTop(),
           left: event.pageX - $("#calendarVolunteers")[0].offsetLeft + parseInt($(this).css("font-size"))
         })
     );
@@ -99,7 +99,7 @@ $(function() {
         left: startX,
         height: em
       });
-      $(document).on("mousemove", "#calendarVolunteers, #calendarHours",  addTimeMousemoveHandler);
+      $(document).on("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $(document).one("mouseup", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
     function addTimeMousemoveHandler(event) {
@@ -116,7 +116,7 @@ $(function() {
         if(Math.abs(elem.offsetTop - startY) <= em/2) {
           startIndex = index;
         }
-        if(Math.abs(elem.offsetTop - endY) <= em/2) {
+        if(Math.abs(elem.offsetTop+em - endY) <= em/2) {
           endIndex = index;
         }
       });

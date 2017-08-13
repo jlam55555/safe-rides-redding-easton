@@ -76,7 +76,7 @@ app.post("/addTime", function(req, res) {
   var start = parseInt(req.body.start);
   var end = parseInt(req.body.end);
   // error code 2: invalid data
-  if(start >= end || start < 0 || end > 23) {
+  if(start > end || start < 0 || end > 23) {
     res.json({success: false, error: 2});
     return;
   }
@@ -95,9 +95,7 @@ app.post("/addTime", function(req, res) {
     }
   }
   calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
-
-  // write to calendar file here!
-
+  fs.writeFile("./volunteers.json", JSON.stringify(calendar));
   res.json({success: true});
 });
 
