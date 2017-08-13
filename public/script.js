@@ -95,22 +95,34 @@ $(function() {
       selectionElement.css({
         top: startY,
         left: startX,
-        width: em,
         height: em
       });
       $(document).on("mousemove", "#calendarVolunteers, #calendarHours",  addTimeMousemoveHandler);
+      $(document).one("mouseup", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
     function addTimeMousemoveHandler(event) {
       selectionElement.css({
         top: startY,
         left: startX,
-        width: Math.max(em, event.pageX - volunteerOffsetX - startX),
         height: Math.max(em, event.pageY - volunteerOffsetY + $("#content").scrollTop() - startY)
       });
-      $(document).one("mouseup", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
     function addTimeMouseupHandler(event) {
-      console.log("mouseup", event.pageX, event.pageY);
+      var endY = startY + parseInt(selectionElement.css("height"));
+      var startIndex, endIndex;
+      $(".volunteerStripes").each(function(index, elem) {
+        if(Math.abs(elem.offsetTop - startY) <= em/2) {
+          startIndex = index;
+        }
+        if(Math.abs(elem.offsetTop - endY) <= em/2) {
+          endIndex = index;
+        }
+      });
+      console.log(startIndex, endIndex);
+      selectionElement.remove();
+
+      /* WORKING HERE */
+
       $(document).off("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $("#addTime").removeClass("selected");
     }

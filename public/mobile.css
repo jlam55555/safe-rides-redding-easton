@@ -127,4 +127,5 @@ body {
 #selectionElement {
   position: absolute;
   background-color: darkgrey;
+  width: 1em;
 }
