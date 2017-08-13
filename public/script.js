@@ -124,8 +124,21 @@ $(function() {
       selectionElement.remove();
 
       $.post("/addTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
-        alert(JSON.stringify(data));
-      });
+        if(!data.success) {
+          var error;
+          switch(data.error) {
+            case 1:
+              error = "Sign in to add volunteer times.";
+              break;
+            case 2:
+              error = "Volunteer times invalid.";
+              break;
+          }
+          console.log(error);
+        } else {
+          setCalendar(currentDate);
+        }
+      }, "json");
 
       $(document).off("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $("#addTime").removeClass("selected");
