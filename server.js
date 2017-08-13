@@ -83,9 +83,9 @@ app.post("/addTime", function(req, res) {
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].email === email) {
       if(
-        (calendar[date][i].start <= start && calendar[date][i].end >= start)
-        || (calendar[date][i].start <= end && calendar[date][i].end >= end)
-        || (calendar[date][i].start >= start && calendar[date][i].end <= end)
+        (calendar[date][i].start <= start-1 && calendar[date][i].end >= start-1)
+        || (calendar[date][i].start <= end+1 && calendar[date][i].end >= end+1)
+        || (calendar[date][i].start >= start-1 && calendar[date][i].end <= end+1)
       ) {
         start = Math.min(calendar[date][i].start, start);
         end = Math.max(calendar[date][i].end, end);
