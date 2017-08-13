@@ -73,12 +73,12 @@ app.post("/addTime", function(req, res) {
   }
   var email = req.session.email;
   var date = req.body.date;
-  var start = req.body.start;
-  var end = req.body.end;
-  console.log(start, end, start >= end, start < 0, end > 23, start>=end||start<0||end>23);
+  var start = parseInt(req.body.start);
+  var end = parseInt(req.body.end);
   // error code 2: invalid data
   if(start >= end || start < 0 || end > 23) {
     res.json({success: false, error: 2});
+    return;
   }
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].email === email) {
