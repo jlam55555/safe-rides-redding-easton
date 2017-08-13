@@ -22,7 +22,7 @@ promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 // reset database (for development purposes only)
 //db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50), password VARCHAR(64), phone VARCHAR(11))").catch(function(err){console.log(err)});
 
-// other dependencies for password hashing, sessions
+// other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
 var session = require("express-session");
 app.use(session({
@@ -30,6 +30,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+var fs = require("fs");
 
 // post requests
 app.post("/getUserDetails", function(req, res) {
@@ -49,6 +50,20 @@ app.post("/getUserDetails", function(req, res) {
   } else {
     res.json({email: false});
   }
+});
+// update calendar if necessary
+var calendar = require("./volunteers.json");
+var dateIterator = new Date();
+var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"}); 
+for(var i = 0; i < 30; i++) {
+  if(calendar[dateFormat.format(dateIterator)] === undefined) {
+    calendar[dateFormat.format(dateIterator)] = [];
+  }
+  dateIterator = new Date(dateIterator.valueOf() + 86400000);
+}
+fs.writeFile("./volunteers.json", JSON.stringify(calendar));
+app.post("/getCalendar", function(req, res) {
+  res.json(calendar);
 });
 
 // routing

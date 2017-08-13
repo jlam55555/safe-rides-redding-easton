@@ -56,11 +56,14 @@
       <div class="tab" data-tab-id="3">
         <h1>Volunteer</h1>
         <div class="signedOut">
-          <button class="changeTab" data-tab-id="1">Sign in or sign up</button> before signing up to volunteer.
+          <button class="changeTab" data-tab-id="1">Sign in or sign up</button> before signing up to volunteer or viewing volunteers.
         </div>
-        <div class="signedIn">
-          <!-- put a calendar here -->
-          <a>(To be filled in with a calendar to schedule volunteers)</a>
+        <div class="signedOut">
+          <div id="calendar">
+            <div id="calendarDays"></div>
+            <div id="calendarHours"></div>
+            <div id="calendarVolunteers"></div>
+          </div>
         </div>
       </div>
     </div>

@@ -19,6 +19,9 @@ input, textarea, select, button {
 .error {
   color: red;
 }
+.striped:nth-child(2n) {
+  background-color: lightgrey;
+}
 
 /* main layout */
 body {
@@ -59,4 +62,62 @@ body {
 #signup > input, #signin > input {
   width: 100%;
   margin: 0.5em 0;
+}
+#calendar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+#calendarDays {
+  flex-basis: 7em;
+  flex-shrink: 1;
+  overflow-y: auto;
+}
+#calendarHours {
+  flex-basis: 0;
+  flex-shrink: 1;
+  position: relative;
+}
+#calendarVolunteers {
+  flex-basis: 0;
+  flex-grow: 1;
+  position: relative;
+}
+.calendarDay {
+  line-height: 1;
+  cursor: pointer;
+}
+.calendarDay:hover {
+  background-color: lightgrey;
+}
+.calendarHour {
+  line-height: 1;
+}
+.volunteerStripes {
+  line-height: 1;
+}
+.volunteer {
+  position: absolute;
+  float: left;
+  width: 1em;
+  overflow-wrap: break-word;
+  line-height: 1;
+  height: 1em;
+}
+.volunteer:nth-child(6n) { background-color: rgba(231, 76, 60, 0.5); }
+.volunteer:nth-child(6n+1) { background-color: rgba(230, 126, 34, 0.5); }
+.volunteer:nth-child(6n+2) { background-color: rgba(241, 196, 15, 0.5); }
+.volunteer:nth-child(6n+3) { background-color: rgba(46, 204, 113, 0.5); }
+.volunteer:nth-child(6n+4) { background-color: rgba(52, 152, 219, 0.5); }
+.volunteer:nth-child(6n+5) { background-color: rgba(155, 89, 182, 0.5); }
+.volunteer:hover {
+  background-color: grey;
+}
+.volunteerInfo {
+  color: white;
+  background-color: black;
+  position: absolute;
+  width: 10em;
+  height: 3em;
+  line-height: 1em;
 }

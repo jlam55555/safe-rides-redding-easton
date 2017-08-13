@@ -16,10 +16,69 @@ $(function() {
         $(this).hide();
       }
     });
+    if($(this).data("tab-id") === 3) {
+      setCalendar(dateFormat.format(new Date()));
+    }
   });
   $(".menuButton").first().click();
   $(".changeTab").click(function() {
     $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
+  });
+
+  // calendar details
+  var calendar;
+  $.post("./getCalendar", {}, function(data) {
+    calendar = data;
+  }, "json");
+  var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"});
+  var dateIterator = new Date();
+  for(var i = 0; i < 30; i++) {
+    $("#calendarDays").append(
+      $("<div/>")
+        .text(dateFormat.format(dateIterator))
+        .addClass("calendarDay")
+    );
+    dateIterator = new Date(dateIterator.valueOf() + 86400000);
+  }
+  for(var i = 0; i < 24; i++) {
+    $("#calendarHours").append($("<div/>").text(("0"+i).slice(-2) + ":00").addClass("calendarHour striped"));
+    $("#calendarVolunteers").append($("<div/>").addClass("volunteerStripes striped").html("&#8203;"));
+  }
+  function setCalendar(date) {
+    var calendarHourHeight = parseInt($("#content").css("font-size"));
+    $("#calendarDays").height(calendarHourHeight * 24);
+    $(".volunteer").remove();
+    for(var i = 0; i < calendar[date].length; i++) {
+      $("#calendarVolunteers").append(
+        $("<div/>")
+          .addClass("volunteer")
+          .css({
+            height: (calendar[date][i].end-calendar[date][i].start+1)*calendarHourHeight,
+            top: $(".calendarHour:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
+            left: (i+1)*calendarHourHeight
+          })
+          .data("name", calendar[date][i].name)
+          .data("start", calendar[date][i].start)
+          .data("end", calendar[date][i].end)
+      );
+    }
+  };
+  $(document).on("mouseenter", ".volunteer", function(event) {
+    $("#calendarVolunteers").append(
+      $("<div/>")
+        .html("<strong>" + $(this).data("name") + "</strong><br>" + ("0"+$(this).data("start")).slice(-2) + ":00-" + ("0"+$(this).data("end")).slice(-2) + ":00")
+        .addClass("volunteerInfo")
+        .css({
+          top: event.pageY - $("#calendarVolunteers")[0].offsetTop,
+          left: event.pageX - $("#calendarVolunteers")[0].offsetLeft + parseInt($(this).css("font-size"))
+        })
+    );
+  });
+  $(document).on("mouseleave", ".volunteer", function() {
+    $(".volunteerInfo").remove();
+  });
+  $(".calendarDay").click(function() {
+    setCalendar($(this).text())
   });
 
   // for use when signing in/out
