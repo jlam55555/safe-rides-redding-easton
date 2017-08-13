@@ -68,7 +68,7 @@ $(function() {
   $(document).on("mouseenter", ".volunteer", function(event) {
     $("#calendarVolunteers").append(
       $("<div/>")
-        .html("<strong>" + $(this).data("name") + "</strong><br>" + ("0"+$(this).data("start")).slice(-2) + ":00-" + ("0"+$(this).data("end")).slice(-2) + ":00")
+        .html("<strong>" + $(this).data("name") + "</strong><br>" + ("0"+$(this).data("start")).slice(-2) + ":00-" + ("0"+$(this).data("end")).slice(-2) + ":59")
         .addClass("volunteerInfo")
         .css({
           top: event.pageY - $("#calendarVolunteers")[0].offsetTop,
