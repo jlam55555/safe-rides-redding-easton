@@ -27,9 +27,6 @@ $(function() {
 
   // calendar details
   var calendar;
-  $.post("./getCalendar", {}, function(data) {
-    calendar = data;
-  }, "json");
   var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"});
   var dateIterator = new Date();
   for(var i = 0; i < 30; i++) {
@@ -50,20 +47,23 @@ $(function() {
     var calendarHourHeight = parseInt($("#content").css("font-size"));
     $("#calendarDays").height(calendarHourHeight * 24);
     $(".volunteer").remove();
-    for(var i = 0; i < calendar[date].length; i++) {
-      $("#calendarVolunteers").append(
-        $("<div/>")
-          .addClass("volunteer")
-          .css({
-            height: (calendar[date][i].end-calendar[date][i].start+1)*calendarHourHeight,
-            top: $(".calendarHour:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
-            left: (i+1)*calendarHourHeight
-          })
-          .data("name", calendar[date][i].name)
-          .data("start", calendar[date][i].start)
-          .data("end", calendar[date][i].end)
-      );
-    }
+    $.post("./getCalendar", {}, function(data) {
+      calendar = data;
+      for(var i = 0; i < calendar[date].length; i++) {
+        $("#calendarVolunteers").append(
+          $("<div/>")
+            .addClass("volunteer")
+            .css({
+              height: (calendar[date][i].end-calendar[date][i].start+1)*calendarHourHeight,
+              top: $(".calendarHour:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
+              left: (i+1)*calendarHourHeight
+            })
+            .data("name", calendar[date][i].name)
+            .data("start", calendar[date][i].start)
+            .data("end", calendar[date][i].end)
+        );
+      }
+    }, "json");
   };
   $(document).on("mouseenter", ".volunteer", function(event) {
     $("#calendarVolunteers").append(
