@@ -75,6 +75,7 @@ app.post("/addTime", function(req, res) {
   var date = req.body.date;
   var start = req.body.start;
   var end = req.body.end;
+  console.log(date, start, end);
   // error code 2: invalid data
   if(start >= end || start < 0 || end > 23) {
     res.json({success: false, error: 2});
