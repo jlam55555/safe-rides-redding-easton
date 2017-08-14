@@ -40,7 +40,7 @@ $(function() {
         && new Date().getHours() >= calendar[currentDate][i].start
         && new Date().getHours() <= calendar[currentDate][i].end
       ) {
-        $("#onDuty").text("On duty.");
+        $("#onDuty").text("On duty. Shift ends at " + calendar[currentDate][i].end + ":59");
         return;
       }
     }
