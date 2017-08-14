@@ -20,8 +20,11 @@ Database table USERS structure:
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 // reset database (for development purposes only)
-db.none("DROP TABLE users").catch((e)=>console.log(e));
-//db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50), password VARCHAR(64), phone VARCHAR(11))").catch(function(err){console.log(err)});
+//db.none("DROP TABLE users").catch((e)=>console.log(e));
+db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) UNIQUE NOT NULL, password VARCHAR(64) UNIQUE NOT NULL, phone VARCHAR(11)) UNIQUE NOT NULL").catch(function(err){console.log(err)});
+db.none("CREATE TABLE calendar (id INT, json MEDIUMTEXT)").catch((e)=>console.log(e));
+var json = require("./volunteers.json");
+db.none("UPDATE calendar (id, json) VALUES (1, \"" + JSON.stringify(json) + "\")").catch((e)=>console.log(e));
 
 // other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
@@ -54,25 +57,26 @@ app.post("/getUserDetails", function(req, res) {
 });
 // update calendar if necessary
 var calendar;
+var dateIterator = new Date();
+var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"}); 
 db.one("SELECT json FROM calendar WHERE id=1")
   .then(function(data) {
     calendar = JSON.parse(data.json);
+    for(var i = 0; i < 30; i++) {
+      if(calendar[dateFormat.format(dateIterator)] === undefined) {
+        calendar[dateFormat.format(dateIterator)] = [];
+      }
+      dateIterator = new Date(dateIterator.valueOf() + 86400000);
+    }
+    db.none("UPDATE calendar WHERE id=1 SET json=\"" + JSON.stringify(calendar) + "\"").catch((e)=>console.log(e));
+    /*fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
+      if(err)
+        console.log(err);
+    });*/
   })
   .catch(function(err) {
     console.log(err);
   });
-var dateIterator = new Date();
-var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"}); 
-for(var i = 0; i < 30; i++) {
-  if(calendar[dateFormat.format(dateIterator)] === undefined) {
-    calendar[dateFormat.format(dateIterator)] = [];
-  }
-  dateIterator = new Date(dateIterator.valueOf() + 86400000);
-}
-fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
-  if(err)
-    console.log(err);
-});
 app.post("/getCalendar", function(req, res) {
   res.json(calendar);
 });
