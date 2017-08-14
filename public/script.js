@@ -1,6 +1,7 @@
 $(function() {
   // tab details
   var currentTab = 1;
+  var user = {signedIn: false};
   $(".menuButton").click(function() {
     var tabId = $(this).data("tab-id");
     $(".menuButton").removeClass("selected");
@@ -29,7 +30,6 @@ $(function() {
   });
 
   // check if on duty
-  var user = {signedIn: false};
   getCalendar(dateFormat.format(new Date()));
   function checkOnDuty() {
     if(!user.signedIn) return;
