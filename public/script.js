@@ -30,7 +30,7 @@ $(function() {
   });
 
   // check if on duty
-  getCalendar(dateFormat.format(new Date()));
+  setCalendar(dateFormat.format(new Date()));
   function checkOnDuty() {
     if(!user.signedIn) return;
     for(var i = 0; i < calendar[currentDate].length; i++) {
