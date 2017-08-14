@@ -30,6 +30,7 @@ $(function() {
   });
 
   // check if on duty
+  var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"});
   setCalendar(dateFormat.format(new Date()));
   function checkOnDuty() {
     if(!user.signedIn) return;
@@ -51,7 +52,6 @@ $(function() {
 
   // calendar details
   var calendar;
-  var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"});
   var dateIterator = new Date();
   for(var i = 0; i < 30; i++) {
     $("#calendarDays").append(
