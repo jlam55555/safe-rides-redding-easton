@@ -82,7 +82,9 @@ $(function() {
   $(".calendarDay").click(function() {
     setCalendar($(this).text())
   });
-  $("#addTime").click(function() {
+  $("#addTime").click(addRemoveHandler.bind($("#addTime"), "add"));
+  $("#removeTime").click(addRemoveHandler.bind($("#removeTime"), "remove"));
+  function addRemoveHandler(eventType) {
     $(this).addClass("selected");
     var startX;
     var startY;
@@ -120,10 +122,8 @@ $(function() {
           endIndex = index;
         }
       });
-      console.log(startIndex, endIndex);
       selectionElement.remove();
-
-      $.post("/addTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
+      $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
         if(!data.success) {
           var error;
           switch(data.error) {
@@ -141,10 +141,10 @@ $(function() {
       }, "json");
 
       $(document).off("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
-      $("#addTime").removeClass("selected");
+      $(eventType === "add" ? "#addTime" : "#removeTime").removeClass("selected");
     }
     $(document).one("mousedown", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
-  });
+  }
 
   // for use when signing in/out
   var signedInElements = $(".signedIn");

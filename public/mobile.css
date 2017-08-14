@@ -121,7 +121,7 @@ body {
   height: 3em;
   line-height: 1em;
 }
-#addTime.selected {
+#addTime.selected, #removeTime.selected {
   background-color: darkgrey;
 }
 #selectionElement {

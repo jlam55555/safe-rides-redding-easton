@@ -70,10 +70,6 @@ db.one("SELECT json FROM calendar")
       dateIterator = new Date(dateIterator.valueOf() + 86400000);
     }
     db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'").catch((e)=>console.log(e));
-    /*fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
-      if(err)
-        console.log(err);
-    });*/
   })
   .catch(function(err) {
     console.log(err);
@@ -115,13 +111,50 @@ app.post("/addTime", function(req, res) {
     .catch(function(err) {
       console.log(err);
     });
-  /*fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
-    if(err) {
-      console.log(err);
-    } else {
-      console.log("successful write of " + JSON.stringify(calendar));
+  res.json({success: true});
+});
+app.post("/removeTime", function(req, res) {
+  // error code 1: not logged in
+  if(req.session.email === undefined) {
+    res.json({success: false, error: 1});
+    return;
+  }
+  var email = req.session.email;
+  var date = req.body.date;
+  var start = parseInt(req.body.start);
+  var end = parseInt(req.body.end);
+  // error code 2: invalid data
+  if(start > end || start < 0 || end > 23) {
+    res.json({success: false, error: 2});
+    return;
+  }
+  for(var i = 0; i < calendar[date].length; i++) {
+    if(calendar[date][i].email === email) {
+      // if contained within removed area
+      if(calendar[date][i].start >= start && calendar[date][i].end <= end) {
+        calendar[date].splice(i, 1);
+        i--;
+        continue;
+      }
+      // if greater than removed area
+      if(calendar[date][i].start < start && calendar[date][i].end > end) {
+        calendar[date].push({name: req.session.name, email: req.session.email, start: end+1, end: calendar[date][i].end});
+        calendar[date][i].end = start-1;
+        continue;
+      }
+      // if straddling start or end of removed area
+      if(calendar[date][i].start < start && calendar[date][i].end >= start) {
+        calendar[date][i].end = start - 1;
+      }
+      if(calendar[date][i].start <= end && calendar[date][i].end > end) {
+        calendar[date][i].start = end + 1;
+      }
     }
-  });*/
+  }
+  db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'")
+    .catch(function(err) {
+      console.log(err);
+    });
   res.json({success: true});
 });
 
