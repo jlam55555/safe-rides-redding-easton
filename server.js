@@ -20,11 +20,12 @@ Database table USERS structure:
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 // reset database (for development purposes only)
-//db.none("DROP TABLE users").catch((e)=>console.log(e));
-db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL)").catch(function(err){console.log(err)});
-db.none("CREATE TABLE calendar (id INT, json MEDIUMTEXT)").catch((e)=>console.log(e));
+db.none("DROP TABLE users").catch((e)=>console.log(e));
+//db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL)").catch(function(err){console.log(err)});
+db.none("DROP TABLE calendar").catch((e)=>console.log(e));
+//db.none("CREATE TABLE calendar (json MEDIUMTEXT)").catch((e)=>console.log(e));
 var json = require("./volunteers.json");
-db.none("UPDATE calendar (id, json) VALUES (1, \"" + JSON.stringify(json) + "\")").catch((e)=>console.log(e));
+//db.none("INSERT INTO calendar (json) VALUES (\"" + JSON.stringify(json) + "\")").catch((e)=>console.log(e));
 
 // other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
@@ -68,7 +69,7 @@ db.one("SELECT json FROM calendar WHERE id=1")
       }
       dateIterator = new Date(dateIterator.valueOf() + 86400000);
     }
-    db.none("UPDATE calendar WHERE id=1 SET json=\"" + JSON.stringify(calendar) + "\"").catch((e)=>console.log(e));
+    db.none("UPDATE calendar SET json=\"" + JSON.stringify(calendar) + "\"").catch((e)=>console.log(e));
     /*fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
       if(err)
         console.log(err);
@@ -110,7 +111,7 @@ app.post("/addTime", function(req, res) {
     }
   }
   //calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
-  db.none("UPDATE calendar SET json=\"" + JSON.stringify(calendar) + "\" WHERE id=1")
+  db.none("UPDATE calendar SET json=\"" + JSON.stringify(calendar) + "\"")
     .catch(function(err) {
       console.log(err);
     });
