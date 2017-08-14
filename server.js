@@ -21,11 +21,11 @@ promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 // reset database (for development purposes only)
 //db.none("DROP TABLE users").catch((e)=>console.log(e));
-db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL)").catch(function(err){console.log(err)});
+//db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL)").catch(function(err){console.log(err)});
 //db.none("DROP TABLE calendar").catch((e)=>console.log(e));
-db.none("CREATE TABLE calendar (json MEDIUMTEXT)").catch((e)=>console.log(e));
-var json = require("./volunteers.json");
-db.none("INSERT INTO calendar (json) VALUES (\"" + JSON.stringify(json) + "\")").catch((e)=>console.log(e));
+//db.none("CREATE TABLE calendar (json MEDIUMTEXT)").catch((e)=>console.log(e));
+//var json = require("./volunteers.json");
+//db.none("INSERT INTO calendar (json) VALUES (\"" + JSON.stringify(json) + "\")").catch((e)=>console.log(e));
 
 // other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
@@ -60,7 +60,7 @@ app.post("/getUserDetails", function(req, res) {
 var calendar;
 var dateIterator = new Date();
 var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"}); 
-db.one("SELECT json FROM calendar WHERE id=1")
+db.one("SELECT json FROM calendar")
   .then(function(data) {
     calendar = JSON.parse(data.json);
     for(var i = 0; i < 30; i++) {
