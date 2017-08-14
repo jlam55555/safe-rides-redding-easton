@@ -44,9 +44,7 @@ $(function() {
         return;
       }
     }
-    if(!onDuty) {
-      $("#onDuty").text("Not on duty.");
-    }
+    $("#onDuty").text("Not on duty.");
   }
   setInterval(checkOnDuty, 1000);
 
