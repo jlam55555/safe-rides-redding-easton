@@ -16,6 +16,9 @@ $(function() {
         $(this).hide();
       }
     });
+    if($(this).data("tab-id") === 1) {
+      checkOnDuty();
+    }
     if($(this).data("tab-id") === 3) {
       setCalendar(dateFormat.format(new Date()));
     }
@@ -24,6 +27,26 @@ $(function() {
   $(".changeTab").click(function() {
     $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
   });
+
+  // check if on duty
+  getCalendar(dateFormat.format(new Date());
+  function checkOnDuty() {
+    if(!user.signedIn) return;
+    for(var i = 0; i < calendar[currentDate].length; i++) {
+      if(
+        calendar[currentDate][i].email === user.email
+        && new Date().getHours() >= calendar[currentDate][i].start
+        && new Date().getHours() <= calendar[currentDate][i].end
+      ) {
+        $("#onDuty").text("On duty.");
+        return;
+      }
+    }
+    if(!onDuty) {
+      $("#onDuty").text("Not on duty.");
+    }
+  }
+  setInterval(checkOnDuty, 1000);
 
   // calendar details
   var calendar;
@@ -149,6 +172,7 @@ $(function() {
   // for use when signing in/out
   var signedInElements = $(".signedIn");
   var signedOutElements = $(".signedOut");
+  var user = {signedIn: false};
   signedInElements.hide();
   function toggleSignedIn(signedIn) {
     if(signedIn) {
@@ -166,11 +190,13 @@ $(function() {
     $("#profileEmail").text(email);
     formattedPhone = (phone.length === 11 ? phone.slice(0, 1) + " " : "") + "(" + phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
     $("#profilePhone").text(formattedPhone);
+    user = {signedIn: true, name: name, email: email, phone: phone};
   }
 
   $("#signout").click(function() {
     $.post("/signout");
     toggleSignedIn(false);
+    user = {signedIn: false};
     console.log("Signed out successfully");
   });
 
