@@ -29,6 +29,7 @@ $(function() {
   });
 
   // check if on duty
+  var user = {signedIn: false};
   getCalendar(dateFormat.format(new Date()));
   function checkOnDuty() {
     if(!user.signedIn) return;
@@ -172,7 +173,6 @@ $(function() {
   // for use when signing in/out
   var signedInElements = $(".signedIn");
   var signedOutElements = $(".signedOut");
-  var user = {signedIn: false};
   signedInElements.hide();
   function toggleSignedIn(signedIn) {
     if(signedIn) {
