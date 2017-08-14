@@ -110,18 +110,18 @@ app.post("/addTime", function(req, res) {
       }
     }
   }
-  //calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
+  calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
   db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'")
     .catch(function(err) {
       console.log(err);
     });
-  fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
+  /*fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
     if(err) {
       console.log(err);
     } else {
       console.log("successful write of " + JSON.stringify(calendar));
     }
-  });
+  });*/
   res.json({success: true});
 });
 
