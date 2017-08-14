@@ -25,7 +25,7 @@ promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 //db.none("DROP TABLE calendar").catch((e)=>console.log(e));
 db.none("CREATE TABLE calendar (json TEXT)").catch((e)=>console.log(e));
 var json = require("./volunteers.json");
-db.none("INSERT INTO calendar (json) VALUES (\"" + JSON.stringify(json) + "\")").catch((e)=>console.log(e));
+db.none("INSERT INTO calendar (json) VALUES ('" + JSON.stringify(json) + "')").catch((e)=>console.log(e));
 
 // other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
@@ -69,7 +69,7 @@ db.one("SELECT json FROM calendar")
       }
       dateIterator = new Date(dateIterator.valueOf() + 86400000);
     }
-    db.none("UPDATE calendar SET json=\"" + JSON.stringify(calendar) + "\"").catch((e)=>console.log(e));
+    db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'").catch((e)=>console.log(e));
     /*fs.writeFile("./volunteers.json", JSON.stringify(calendar), function(err) {
       if(err)
         console.log(err);
@@ -111,7 +111,7 @@ app.post("/addTime", function(req, res) {
     }
   }
   //calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
-  db.none("UPDATE calendar SET json=\"" + JSON.stringify(calendar) + "\"")
+  db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'")
     .catch(function(err) {
       console.log(err);
     });
