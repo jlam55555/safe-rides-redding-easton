@@ -79,7 +79,6 @@ app.post("/getUserDetails", function(req, res) {
 function checkVolunteers() {
   var date = dateFormat.format(new Date());
   var currentHour = (24+new Date().getHours()-4)%24; // four hour time shift from UTC/GMT to EST
-  console.log(new Date().getHours(), currentHour);
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].start === currentHour) {
       console.log("Sending out reminder to " + calendar[date][i].name + " for volunteer shift from " + calendar[date][i] + ":00 to " + calendar[date][i].end + ":59.");
@@ -96,7 +95,7 @@ setTimeout(function() {
 // update calendar if necessary
 var calendar;
 var dateIterator = new Date();
-var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"}); 
+var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit", timeZone: "America/New_York"}); 
 db.one("SELECT json FROM calendar")
   .then(function(data) {
     calendar = JSON.parse(data.json);
