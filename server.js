@@ -40,7 +40,6 @@ var fs = require("fs");
 // twilio for sending text messages
 var twilioSid = process.env.TWILIO_SID;
 var twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-console.log(twilioSid, twilioAuthToken);
 var twilio = require("twilio");
 var twilioClient = new twilio(twilioSid, twilioAuthToken);
 function sendSMS(to, body) {
@@ -56,7 +55,6 @@ function sendSMS(to, body) {
       console.log("err: " + err);
     });
 }
-sendSMS(null, "Hello from Safe Rides of Redding and Easton!");
 
 // post requests
 app.post("/getUserDetails", function(req, res) {
