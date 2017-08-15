@@ -78,7 +78,7 @@ app.post("/getUserDetails", function(req, res) {
 // send reminders about volunteer shifts if necessary (needs to happen every hour)
 function checkVolunteers() {
   var date = dateFormat.format(new Date());
-  var currentHour = (new Date().getHours()-4)%24; // four hour time shift from UTC/GMT to EST
+  var currentHour = (24+new Date().getHours()-4)%24; // four hour time shift from UTC/GMT to EST
   console.log(new Date().getHours(), currentHour);
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].start === currentHour) {
