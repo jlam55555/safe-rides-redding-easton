@@ -79,7 +79,7 @@ app.post("/getUserDetails", function(req, res) {
 function checkVolunteers() {
   var date = dateFormat.format(new Date());
   var currentHour = new Date().getHours();
-  console.log(currentHour);
+  console.log("currenthour " + currentHour);
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].start === currentHour) {
       db.one("SELECT phone FROM users WHERE email='" + calendar[date][i].email + "'")
