@@ -20,9 +20,9 @@
     <div id="content">
       <div class="tab" data-tab-id="1" data-tab-name="Profile">
         <div class="signedIn">
-          <h1 id="profileName"></h1>
-          <h2 id="profileEmail"></h2>
-          <h2 id="profilePhone"></h2>
+          <h3 id="profileName"></h3>
+          <p id="profileEmail"></p>
+          <p id="profilePhone"></p>
           <p id="onDuty"></p>
           <button id="signout">Sign Out</button>
         </div>
@@ -61,14 +61,17 @@
           <button class="changeTab buttonLink" data-tab-id="1">Sign in or sign up</button> before signing up to volunteer or viewing volunteers.
         </div>
         <div class="signedIn">
-          <div id="modifyCalendar">
-            <button id="addTime">Add Volunteer Time</button>
-            <button id="removeTime">Remove Volunteer Time</button>
-          </div>
+          <div id="calendarDays"></div>
           <div id="calendar">
-            <div id="calendarDays"></div>
-            <div id="calendarHours"></div>
-            <div id="calendarVolunteers"></div>
+            <div id="modifyCalendar">
+              <button id="unsetCalendar">&lt; 08/14/17</button>
+              <button id="addTime">Add Volunteer Time</button>
+              <button id="removeTime">Remove Volunteer Time</button>
+            </div>
+            <div id="calendarView">
+              <div id="calendarHours"></div>
+              <div id="calendarVolunteers"></div>
+            </div>
           </div>
         </div>
       </div>

@@ -17,20 +17,21 @@ input, textarea, select, button:not(.buttonLink) {
   outline: none;
   transition: background-color 0.25s;
   border-radius: 0.25em;
+  width: 100%;
+  margin: 0.5em 0;
 }
 input:focus, textarea:focus, select:focus {
   background-color: lightgrey;
 }
 input, textarea {
   background-color: transparent;
-  border: 0;
+  border: none;
   border-top: 1px solid black;
 }
 button:not(.buttonLink) {
-  width: 100%;
   background-color: darkgrey;
   color: white;
-  border: 0;
+  border: none;
   transition: background-color 0.25s, color 0.25s;
 }
 button:not(.buttonLink):focus {
@@ -44,6 +45,8 @@ a, button.buttonLink {
   text-decoration: underline;
   outline: none;
   border: none;
+  padding: 0;
+  text-align: left;
 }
 a:active, button.buttonLink:focus {
   color: darkgrey;
@@ -87,33 +90,37 @@ body {
 }
 .menuButton {
   display: inline-block;
-  padding: 1em;
-  font-size: 1em !important;
+  padding: 0.5em;
+  font-size: 1.5em !important;
   flex-grow: 1;
   text-align: center;
   background-color: black;
   color: white;
   cursor: pointer;
-  height: 3em;
+  height: 2em;
 }
 .menuButton.selected {
   background-color: darkgrey;
 }
 
 /* specific styles */
-#signup > input, #signin > input {
-  width: 100%;
-  margin: 0.5em 0;
-}
 #calendar {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  margin-top: -1em;
+}
+#calendarView {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
-#calendarDays {
-  flex-basis: 7em;
-  flex-shrink: 1;
-  overflow-y: auto;
+#unsetCalendar {
+  width: 100%;
+  background-color: lightgrey;
+  border-radius: 0;
+  margin: 0 0 0 -0.5em;
+  width: calc(100% + 1em);
 }
 #calendarHours {
   flex-basis: 0;

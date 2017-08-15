@@ -246,6 +246,13 @@ app.post("/signup", function(req, res) {
     });
 });
 app.post("/signin", function(req, res) {
+
+  // for dev only
+  req.session.email = "jlam55555@gmail.com";
+  req.session.name = "Jonathan Lam";
+  res.json({success: true, phone: "1234567890", name: "Jonathan Lam"});
+  return;
+
   var email = req.body.email;
   var password = req.body.password;
 

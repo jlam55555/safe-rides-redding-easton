@@ -22,7 +22,7 @@ $(function() {
       checkOnDuty();
     }
     if($(this).data("tab-id") === 3) {
-      setCalendar(dateFormat.format(new Date()));
+      unsetCalendar();
     }
   });
   $(".menuButton").first().click();
@@ -70,8 +70,11 @@ $(function() {
     var calendarHourHeight = parseInt($("#content").css("font-size"));
     $("#calendarDays").height(calendarHourHeight * 24);
     $(".volunteer").remove();
-    $.post("./getCalendar", {}, function(data) {
-      calendar = data;
+    // for dev only
+    //$.post("./getCalendar", {}, function(data) {
+      //calendar = data;
+      console.log(date);
+      calendar = {"08/14/17": []};
       for(var i = 0; i < calendar[date].length; i++) {
         $("#calendarVolunteers").append(
           $("<div/>")
@@ -86,7 +89,10 @@ $(function() {
             .data("end", calendar[date][i].end)
         );
       }
-    }, "json");
+      $("#calendarDays").hide();
+      $("#calendar").show();
+      console.log("testing");
+    //}, "json");
   };
   $(document).on("mouseenter", ".volunteer", function(event) {
     $("#calendarVolunteers").append(
@@ -102,8 +108,12 @@ $(function() {
   $(document).on("mouseleave", ".volunteer", function() {
     $(".volunteerInfo").remove();
   });
+  function unsetCalendar() {
+    $("#calendar").hide();
+    $("#calendarDays").show();
+  }
   $(".calendarDay").click(function() {
-    setCalendar($(this).text())
+    setCalendar($(this).text());
   });
   $("#addTime").click(addRemoveHandler.bind($("#addTime"), "add"));
   $("#removeTime").click(addRemoveHandler.bind($("#removeTime"), "remove"));
