@@ -132,6 +132,7 @@ $(function() {
         left: startX,
         height: Math.max(em, event.pageY - volunteerOffsetY + $("#content").scrollTop() - startY)
       });
+      event.preventDefault();
     }
     function addTimeMouseupHandler(event) {
       var endY = startY + parseInt(selectionElement.css("height"));
