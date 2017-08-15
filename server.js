@@ -81,11 +81,13 @@ function checkVolunteers() {
   var currentHour = (24+new Date().getHours()-4)%24; // four hour time shift from UTC/GMT to EST
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].start === currentHour) {
-      console.log("Sending out reminder to " + calendar[date][i].name + " for volunteer shift from " + calendar[date][i] + ":00 to " + calendar[date][i].end + ":59.");
-      db.one("SELECT phone FROM users WHERE email='" + calendar[date][i].email + "'")
-        .then(function(data) {
-          sendSMS(data.phone, "Safe Rides of Redding and Easton reminder: Your volunteer time from " + calendar[date][i] + ":00 to " + calendar[date][i].end + ":59 has begun.");
-        }).catch(e=>console.log(e));
+      console.log("Sending out reminder to " + calendar[date][i].name + " for volunteer shift from " + calendar[date][i].start + ":00 to " + calendar[date][i].end + ":59.");
+      (function(i) {
+        db.one("SELECT phone FROM users WHERE email='" + calendar[date][i].email + "'")
+          .then(function(data) {
+            sendSMS(data.phone, "Safe Rides of Redding and Easton reminder: Your volunteer time from " + calendar[date][i].start + ":00 to " + calendar[date][i].end + ":59 has begun.");
+          }).catch(e=>console.log(e));
+      })(i);
     }
   }
 }
