@@ -75,6 +75,23 @@ app.post("/getUserDetails", function(req, res) {
     res.json({email: false});
   }
 });
+// send reminders about volunteer shifts if necessary (needs to happen every hour)
+function checkVolunteers() {
+  var date = dateFormat.format(new Date());
+  var currentHour = new Date().getHours();
+  console.log(currentHour);
+  for(var i = 0; i < calendar[date].length; i++) {
+    if(calendar[date][i].start === currentHour) {
+      db.one("SELECT phone FROM users WHERE email='" + calendar[date][i].email + "'")
+        .then(function(data) {
+          sendSMS(data.phone, "Safe Rides of Redding and Easton reminder: Your volunteer time from " + calendar[date][i] + ":00 to " + calendar[date][i].end + ":59 has begun.");
+        }).catch(e=>console.log(e));
+    }
+  }
+}
+setTimeout(function() {
+  setInterval(checkVolunteers, 60*60*1000);
+}, (61-(new Date().getMinutes()))*60*1000);
 // update calendar if necessary
 var calendar;
 var dateIterator = new Date();
@@ -89,6 +106,7 @@ db.one("SELECT json FROM calendar")
       dateIterator = new Date(dateIterator.valueOf() + 86400000);
     }
     db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'").catch((e)=>console.log(e));
+    checkVolunteers();
   })
   .catch(function(err) {
     console.log(err);
