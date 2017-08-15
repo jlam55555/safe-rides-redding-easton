@@ -37,6 +37,27 @@ app.use(session({
 }));
 var fs = require("fs");
 
+// twilio for sending text messages
+var twilioSid = process.env.TWILIO_SID;
+var twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+console.log(twilioSid, twilioAuthToken);
+var twilio = require("twilio");
+var twilioClient = new twilio(twilioSid, twilioAuthToken);
+function sendSMS(to, body) {
+  twilioClient.messages.create({
+    body: body,
+    to: "+12035900107", // change in production
+    from: process.env.TWILIO_PHONE_NUMBER
+  })
+    .then(function(message) {
+      console.log(message.sid);
+    })
+    .catch(function(err) {
+      console.log("err: " + err);
+    });
+}
+sendSMS(null, "Hello from Safe Rides of Redding and Easton!");
+
 // post requests
 app.post("/getUserDetails", function(req, res) {
   var ssn = req.session;

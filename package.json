@@ -14,7 +14,8 @@
     "pg-promise": "5.9.3",
     "body-parser": "1.17.2",
     "password-hash": "1.2.2",
-    "express-session": "1.15.3"
+    "express-session": "1.15.3",
+    "twilio": "3.6.2"
   },
   "license": "MIT"
 }
