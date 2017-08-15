@@ -40,7 +40,7 @@ $(function() {
         && new Date().getHours() >= calendar[currentDate][i].start
         && new Date().getHours() <= calendar[currentDate][i].end
       ) {
-        $("#onDuty").text("On duty. Shift ends at " + calendar[currentDate][i].end + ":59");
+        $("#onDuty").text("On duty. Shift ends at " + calendar[currentDate][i].end + ":59.");
         return;
       }
     }
@@ -123,8 +123,8 @@ $(function() {
         left: startX,
         height: em
       });
-      $(document).on("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
-      $(document).one("mouseup", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
+      $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+      $(document).one("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
     function addTimeMousemoveHandler(event) {
       selectionElement.css({
@@ -162,10 +162,10 @@ $(function() {
         }
       }, "json");
 
-      $(document).off("mousemove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+      $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $(eventType === "add" ? "#addTime" : "#removeTime").removeClass("selected");
     }
-    $(document).one("mousedown", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
+    $(document).one("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
   }
 
   // for use when signing in/out
