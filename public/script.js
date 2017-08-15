@@ -12,6 +12,7 @@ $(function() {
     })
     $(".tab").each(function() {
       if($(this).data("tab-id") === tabId) {
+        $("#header").text($(this).data("tab-name"));
         $(this).show();
       } else {
         $(this).hide();

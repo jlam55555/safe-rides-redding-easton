@@ -11,11 +11,14 @@
     <!-- FontAwesome -->
     <script src="https://use.fontawesome.com/a46f002d02.js"></script>
     <script src="script.js"></script>
-    <link rel="stylesheet" href="mobile.css">
+    <link rel="stylesheet" href="/mobile.css">
+    <link rel="stylesheet" href="/desktop.css" media="(min-width: 1024px)">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,400i,700">
   </head>
   <body>
+    <div id="header"></div>
     <div id="content">
-      <div class="tab" data-tab-id="1">
+      <div class="tab" data-tab-id="1" data-tab-name="Profile">
         <div class="signedIn">
           <h1 id="profileName"></h1>
           <h2 id="profileEmail"></h2>
@@ -24,7 +27,7 @@
           <button id="signout">Sign Out</button>
         </div>
         <div class="signedOut">
-          <h1>Sign Up</h1>
+          <h3>Sign Up</h3>
           <p class="error" id="signupError"></p>
           <form id="signup">
             <input type="email" id="signupEmail" placeholder="Email address for login and updates"><br>
@@ -33,7 +36,7 @@
             <input type="tel" id="signupPhone" placeholder="Phone Number for contact"><br>
             <button type="button" id="signupSubmit">Sign Up</button>
           </form>
-          <h1>Sign In</h1>
+          <h3>Sign In</h3>
           <p class="error" id="signinError"></p>
           <form id="signin">
             <input type="email" id="signinEmail" placeholder="Email Address"><br>
@@ -42,10 +45,9 @@
           </form>
         </div>
       </div>
-      <div class="tab" data-tab-id="2">
-        <h1>Request a Safe Ride</h1> 
+      <div class="tab" data-tab-id="2" data-tab-name="Request Safe Ride">
         <div class="signedOut">
-          <button class="changeTab" data-tab-id="1">Sign in or sign up</button> before asking for a Safe Ride. 
+          <button class="changeTab buttonLink" data-tab-id="1">Sign in or sign up</button> before asking for a Safe Ride. 
         </div>
         <div class="signedIn">
           <input type="text" id="startLocation" placeholder="Current Location"><br>
@@ -54,12 +56,11 @@
           <button type="button">Request a Safe Ride</button>
         </div>
       </div>
-      <div class="tab" data-tab-id="3">
-        <h1>Volunteer</h1>
+      <div class="tab" data-tab-id="3" data-tab-name="Volunteer">
         <div class="signedOut">
-          <button class="changeTab" data-tab-id="1">Sign in or sign up</button> before signing up to volunteer or viewing volunteers.
+          <button class="changeTab buttonLink" data-tab-id="1">Sign in or sign up</button> before signing up to volunteer or viewing volunteers.
         </div>
-        <div>
+        <div class="signedIn">
           <div id="modifyCalendar">
             <button id="addTime">Add Volunteer Time</button>
             <button id="removeTime">Remove Volunteer Time</button>
