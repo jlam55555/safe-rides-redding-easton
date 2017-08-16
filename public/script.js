@@ -3,6 +3,9 @@ $(function() {
   var currentTab = 1;
   var user = {signedIn: false};
   var addRemoveHandlerRunning = false;
+  for(var i = 0; i < 24; i++) {
+    $("#calendarVolunteers").append($("<div/>").html(i%2===1?("0"+i).slice(-2) + ":00":"&#8203;").addClass("volunteerStripes striped"));
+  }
   $(".menuButton").click(function() {
     var tabId = $(this).data("tab-id");
     $(".menuButton").removeClass("selected");
@@ -61,9 +64,6 @@ $(function() {
     );
     dateIterator = new Date(dateIterator.valueOf() + 86400000);
   }
-  for(var i = 0; i < 24; i++) {
-    $("#calendarVolunteers").append($("<div/>").html(i%2===1?("0"+i).slice(-2) + ":00":"&#8203;").addClass("volunteerStripes striped"));
-  }
   var currentDate;
   var blockSize;
   var isCalendar = false;
@@ -84,7 +84,6 @@ $(function() {
         maxHeight: blockSize
       });
       for(var i = 0; i < calendar[date].length; i++) {
-        if($(".volunteerStripes").length === 0) break;
         $("#calendarVolunteers").append(
           $("<div/>")
             .addClass("volunteer")
