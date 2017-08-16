@@ -139,7 +139,6 @@ $(function() {
         left: startX,
         height: blockSize
       });
-      console.log(startY, startX, event.pageY || event.originalEvent.touches[0].pageY, $("#calendarVolunteers")[0].offsetTop, (event.pageY ||event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop);
       $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $(document).one("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
@@ -165,7 +164,7 @@ $(function() {
       selectionElement.remove();
       $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       var eventType = prompt("Add or remove time?");
-      /*$.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
+      $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
         if(!data.success) {
           var error;
           switch(data.error) {
@@ -183,7 +182,7 @@ $(function() {
           addRemoveHandlerRunning = false;
           setCalendar(currentDate);
         }
-      }, "json");*/
+      }, "json");
     }
     $(document).one("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
   }
