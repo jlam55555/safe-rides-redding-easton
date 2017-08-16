@@ -78,7 +78,7 @@ body {
   flex-basis: 0;
   flex-grow: 1;
   overflow-y: auto;
-  padding: 1em 0.5em;
+  /*padding: 1em 0.5em;*/
 }
 #menu {
   flex-shrink: 1;
@@ -108,29 +108,25 @@ body {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  margin-top: -1em;
-}
-#calendarView {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  overflow: hidden;
 }
 #unsetCalendar {
   width: 100%;
   background-color: lightgrey;
   border-radius: 0;
-  margin: 0 0 0 -0.5em;
-  width: calc(100% + 1em);
-}
-#calendarHours {
-  flex-basis: 0;
-  flex-shrink: 1;
-  position: relative;
+  margin: 0;
 }
 #calendarVolunteers {
   flex-basis: 0;
   flex-grow: 1;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+.volunteerStripes {
+  flex-shrink: 1;
+  vertical-align: baseline;
 }
 .calendarDay {
   line-height: 1;
@@ -139,16 +135,9 @@ body {
 .calendarDay:hover {
   background-color: lightgrey;
 }
-.calendarHour {
-  line-height: 1;
-}
-.volunteerStripes {
-  line-height: 1;
-}
 .volunteer {
   position: absolute;
   float: left;
-  width: 1em;
   overflow-wrap: break-word;
   line-height: 1;
   height: 1em;

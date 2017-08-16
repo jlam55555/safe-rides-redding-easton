@@ -2,6 +2,7 @@ $(function() {
   // tab details
   var currentTab = 1;
   var user = {signedIn: false};
+  var addRemoveHandlerRunning = false;
   $(".menuButton").click(function() {
     var tabId = $(this).data("tab-id");
     $(".menuButton").removeClass("selected");
@@ -61,38 +62,45 @@ $(function() {
     dateIterator = new Date(dateIterator.valueOf() + 86400000);
   }
   for(var i = 0; i < 24; i++) {
-    $("#calendarHours").append($("<div/>").text(("0"+i).slice(-2) + ":00").addClass("calendarHour striped"));
-    $("#calendarVolunteers").append($("<div/>").addClass("volunteerStripes striped").html("&#8203;"));
+    $("#calendarVolunteers").append($("<div/>").html(i%2===1?("0"+i).slice(-2) + ":00":"&#8203;").addClass("volunteerStripes striped"));
   }
   var currentDate;
+  var blockSize;
+  var isCalendar = false;
   function setCalendar(date) {
+    isCalendar = true;
+    $("#calendar").height($("#content").height());
     currentDate = date;
-    var calendarHourHeight = parseInt($("#content").css("font-size"));
-    $("#calendarDays").height(calendarHourHeight * 24);
     $(".volunteer").remove();
-    // for dev only
-    //$.post("./getCalendar", {}, function(data) {
-      //calendar = data;
-      console.log(date);
-      calendar = {"08/14/17": []};
+    $.post("./getCalendar", {}, function(data) {
+      calendar = data;
+      // for dev only
+      //console.log(date);
+      //calendar = {"08/15/17": [{"name":"Jonathan Lam","email":"jlam55555@gmail.com","start":5,"end":10},{"name":"Jessica Lam","email":"jjssclam@aol.com","start":2,"end":23}]};
+      $("#calendarDays").hide();
+      $("#calendar").show();
+      blockSize = $("#calendarVolunteers").height()/24;
+      $(".volunteerStripes").css({
+        maxHeight: blockSize
+      });
       for(var i = 0; i < calendar[date].length; i++) {
+        if($(".volunteerStripes").length === 0) break;
         $("#calendarVolunteers").append(
           $("<div/>")
             .addClass("volunteer")
             .css({
-              height: (calendar[date][i].end-calendar[date][i].start+1)*calendarHourHeight,
-              top: $(".calendarHour:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
-              left: (i+1)*calendarHourHeight
+              width: blockSize,
+              height: (calendar[date][i].end-calendar[date][i].start+1)*blockSize,
+              top: $(".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
+              left: (i+1)*blockSize
             })
             .data("name", calendar[date][i].name)
             .data("start", calendar[date][i].start)
             .data("end", calendar[date][i].end)
         );
       }
-      $("#calendarDays").hide();
-      $("#calendar").show();
-      console.log("testing");
-    //}, "json");
+      addRemoveHandler();
+    }, "json");
   };
   $(document).on("mouseenter", ".volunteer", function(event) {
     $("#calendarVolunteers").append(
@@ -111,28 +119,25 @@ $(function() {
   function unsetCalendar() {
     $("#calendar").hide();
     $("#calendarDays").show();
+    isCalendar = false;
   }
   $(".calendarDay").click(function() {
     setCalendar($(this).text());
   });
-  $("#addTime").click(addRemoveHandler.bind($("#addTime"), "add"));
-  $("#removeTime").click(addRemoveHandler.bind($("#removeTime"), "remove"));
-  function addRemoveHandler(eventType) {
-    $(this).addClass("selected");
+  function addRemoveHandler() {
+    if(!isCalendar || addRemoveHandlerRunning) return;
+    addRemoveHandlerRunning = true;
     var startX;
     var startY;
-    var volunteerOffsetX = $("#calendarVolunteers")[0].offsetLeft;
-    var volunteerOffsetY = $("#calendarVolunteers")[0].offsetTop;
     var selectionElement = $("<div/>").attr("id", "selectionElement");
     $("#calendarVolunteers").append(selectionElement);
-    var em = parseInt($("#content").css("font-size"));
     function addTimeMousedownHandler(event) {
-      startX = event.pageX - volunteerOffsetX;
-      startY = event.pageY - volunteerOffsetY + $("#content").scrollTop();
+      startX = blockSize;
+      startY = event.pageY - $("#calendarVolunteers")[0].offsetTop;
       selectionElement.css({
         top: startY,
         left: startX,
-        height: em
+        height: blockSize
       });
       $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $(document).one("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
@@ -141,7 +146,7 @@ $(function() {
       selectionElement.css({
         top: startY,
         left: startX,
-        height: Math.max(em, event.pageY - volunteerOffsetY + $("#content").scrollTop() - startY)
+        height: Math.max(blockSize, event.pageY - $("#calendarVolunteers")[0].offsetTop - startY)
       });
       event.preventDefault();
     }
@@ -149,14 +154,16 @@ $(function() {
       var endY = startY + parseInt(selectionElement.css("height"));
       var startIndex, endIndex;
       $(".volunteerStripes").each(function(index, elem) {
-        if(Math.abs(elem.offsetTop - startY) <= em/2) {
+        if(Math.abs(elem.offsetTop - startY) <= blockSize/2) {
           startIndex = index;
         }
-        if(Math.abs(elem.offsetTop+em - endY) <= em/2) {
+        if(Math.abs(elem.offsetTop+blockSize - endY) <= blockSize/2) {
           endIndex = index;
         }
       });
       selectionElement.remove();
+      $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+      var eventType = prompt("Add or remove time?");
       $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
         if(!data.success) {
           var error;
@@ -169,13 +176,13 @@ $(function() {
               break;
           }
           console.log(error);
+          addRemoveHandlerRunning = false;
+          addRemoveHandler();
         } else {
+          addRemoveHandlerRunning = false;
           setCalendar(currentDate);
         }
       }, "json");
-
-      $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
-      $(eventType === "add" ? "#addTime" : "#removeTime").removeClass("selected");
     }
     $(document).one("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
   }
