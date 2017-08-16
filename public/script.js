@@ -139,7 +139,7 @@ $(function() {
         left: startX,
         height: blockSize
       });
-      console.log(startY, startX);
+      console.log(startY, startX, event.pageY, $("#calendarVolunteers")[0].offsetTop, event.pageY - $("#calendarVolunteers")[0].offsetTop);
       $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $(document).one("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
