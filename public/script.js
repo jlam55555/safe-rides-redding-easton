@@ -121,6 +121,7 @@ $(function() {
     $("#calendarDays").show();
     isCalendar = false;
   }
+  $("#unsetCalendar").click(unsetCalendar);
   $(".calendarDay").click(function() {
     setCalendar($(this).text());
   });
