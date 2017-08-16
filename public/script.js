@@ -133,13 +133,13 @@ $(function() {
     $("#calendarVolunteers").append(selectionElement);
     function addTimeMousedownHandler(event) {
       startX = blockSize;
-      startY = event.pageY - $("#calendarVolunteers")[0].offsetTop;
+      startY = (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop;
       selectionElement.css({
         top: startY,
         left: startX,
         height: blockSize
       });
-      console.log(startY, startX, event.pageY, $("#calendarVolunteers")[0].offsetTop, event.pageY - $("#calendarVolunteers")[0].offsetTop);
+      console.log(startY, startX, event.pageY || event.originalEvent.touches[0].pageY, $("#calendarVolunteers")[0].offsetTop, (event.pageY ||event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop);
       $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       $(document).one("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
@@ -147,7 +147,7 @@ $(function() {
       selectionElement.css({
         top: startY,
         left: startX,
-        height: Math.max(blockSize, event.pageY - $("#calendarVolunteers")[0].offsetTop - startY)
+        height: Math.max(blockSize, (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop - startY)
       });
     }
     function addTimeMouseupHandler(event) {
