@@ -74,7 +74,6 @@ $(function() {
     $(".volunteer").remove();
     $.post("./getCalendar", {}, function(data) {
       calendar = data;
-      console.log(calendar);
       // for dev only
       //console.log(date);
       //calendar = {"08/15/17": [{"name":"Jonathan Lam","email":"jlam55555@gmail.com","start":5,"end":10},{"name":"Jessica Lam","email":"jjssclam@aol.com","start":2,"end":23}]};
