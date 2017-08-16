@@ -83,9 +83,8 @@ $(function() {
       $(".volunteerStripes").css({
         maxHeight: blockSize
       });
-      console.log(calendar);
       for(var i = 0; i < calendar[date].length; i++) {
-        console.log(typeof calendar[date][i].start, parseInt(calendar[date][i].start), (parseInt(calendar[date][i].start)+1), $(".volunteerStripes"), (".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop);
+        if(calendar[date][i].start === null) continue;
         $("#calendarVolunteers").append(
           $("<div/>")
             .addClass("volunteer")
@@ -161,10 +160,11 @@ $(function() {
           endIndex = index;
         }
       });
+      console.log(startIndex, endIndex);
       selectionElement.remove();
       $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       var eventType = prompt("Add or remove time?");
-      $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
+      /*$.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
         if(!data.success) {
           var error;
           switch(data.error) {
@@ -182,7 +182,7 @@ $(function() {
           addRemoveHandlerRunning = false;
           setCalendar(currentDate);
         }
-      }, "json");
+      }, "json");*/
     }
     $(document).one("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
   }
