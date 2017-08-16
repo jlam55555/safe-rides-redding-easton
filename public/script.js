@@ -83,6 +83,7 @@ $(function() {
       $(".volunteerStripes").css({
         maxHeight: blockSize
       });
+      console.log(calendar);
       for(var i = 0; i < calendar[date].length; i++) {
         console.log(typeof calendar[date][i].start, parseInt(calendar[date][i].start), (parseInt(calendar[date][i].start)+1), $(".volunteerStripes"), (".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop);
         $("#calendarVolunteers").append(
