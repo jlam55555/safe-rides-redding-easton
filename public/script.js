@@ -1,4 +1,9 @@
 $(function() {
+  // scrolling details
+  $("body").on("touchmove", function(event) {
+    event.preventDefault();
+  });
+
   // tab details
   var currentTab = 1;
   var user = {signedIn: false};

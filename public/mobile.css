@@ -1,7 +1,6 @@
 /* general styles */
 * {
   box-sizing: border-box;
-  overflow-y: hidden;
 }
 body, html {
   margin: 0;
