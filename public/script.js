@@ -141,6 +141,7 @@ $(function() {
         height: blockSize
       });
       $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+      $("body").on("mousemove touchmove", noScroll);
       $(document).one("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
     }
     function addTimeMousemoveHandler(event) {
@@ -149,6 +150,9 @@ $(function() {
         left: startX,
         height: Math.max(blockSize, (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop - startY)
       });
+      event.preventDefault();
+    }
+    function noScroll(event) {
       event.preventDefault();
     }
     function addTimeMouseupHandler(event) {
@@ -165,6 +169,7 @@ $(function() {
       console.log(startIndex, endIndex);
       selectionElement.remove();
       $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+      $("body").off("mousemove touchmove", noScroll);
       var eventType = prompt("Add or remove time?");
       $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
         if(!data.success) {
