@@ -27,9 +27,6 @@ $(function() {
     }
     if($(this).data("tab-id") === 3) {
       unsetCalendar();
-      $("#calendar").css({overflowY: "hidden"});
-    } else {
-      $("#calendar").css({overflowY: "auto"});
     }
   });
   $(".menuButton").first().click();
@@ -152,6 +149,7 @@ $(function() {
         left: startX,
         height: Math.max(blockSize, (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop - startY)
       });
+      event.preventDefault();
     }
     function addTimeMouseupHandler(event) {
       var endY = startY + parseInt(selectionElement.css("height"));
