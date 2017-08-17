@@ -90,7 +90,7 @@ body {
   font-weight: bold;
 }
 #header.webApp {
-  padding-top: calc(40px + 0.5em);
+  padding-top: calc(20px + 0.5em);
 }
 #content {
   flex-basis: 0;
