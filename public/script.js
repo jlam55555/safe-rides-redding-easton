@@ -13,12 +13,8 @@ $(function() {
   }
   $(".menuButton").click(function() {
     var tabId = $(this).data("tab-id");
-    $(".menuButton").removeClass("selected");
-    $(".menuButton").each(function() {
-      if($(this).data("tab-id") === tabId) {
-        $(this).addClass("selected");
-      }
-    })
+    $(".menuButton").removeClass("redbg greenbg bluebg");
+    $("#header").removeClass("redbg greenbg bluebg");
     $(".tab").each(function() {
       if($(this).data("tab-id") === tabId) {
         $("#header").text($(this).data("tab-name"));
@@ -27,11 +23,21 @@ $(function() {
         $(this).hide();
       }
     });
-    if($(this).data("tab-id") === 1) {
-      checkOnDuty();
-    }
-    if($(this).data("tab-id") === 3) {
-      unsetCalendar();
+    switch($(this).data("tab-id")) {
+      case 1:
+        checkOnDuty();
+        $("#header").addClass("redbg");
+        $(".menuButton:nth-of-type(1)").addClass("redbg");
+        break;
+      case 2:
+        $("#header").addClass("greenbg");
+        $(".menuButton:nth-of-type(2)").addClass("greenbg");
+        break;
+      case 3:
+        unsetCalendar();
+        $("#header").addClass("bluebg");
+        $(".menuButton:nth-of-type(3)").addClass("bluebg");
+        break;
     }
   });
   $(".menuButton").first().click();

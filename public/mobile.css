@@ -21,22 +21,21 @@ input, textarea, select, button:not(.buttonLink) {
   margin: 0.5em 0;
 }
 input:focus, textarea:focus, select:focus {
-  background-color: lightgrey;
+  background-color: #ecf0f1;
 }
 input, textarea {
   background-color: transparent;
   border: none;
-  border-top: 1px solid black;
+  border-top: 1px solid #7f8c8d;
 }
 button:not(.buttonLink) {
-  background-color: darkgrey;
-  color: white;
+  background-color: #ecf0f1;
   border: none;
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color 0.25s;
+  color: #2c3e50;
 }
 button:not(.buttonLink):focus {
-  background-color: black;
-  color: lightgrey;
+  background-color: #bdc3c7;
 }
 a, button.buttonLink {
   font-family: inherit;
@@ -59,6 +58,22 @@ a:active, button.buttonLink:focus {
 .striped:nth-child(2n) {
   background-color: lightgrey;
 }
+.red    { color: #e74c3c; }
+.orange { color: #e67e22; }
+.yellow { color: #f1c40f; }
+.green  { color: #2ecc71; }
+.blue   { color: #3498db; }
+.purple { color: #9b59b6; }
+.black  { color: #2c3e50; }
+.white  { color: #ecf0f1; }
+.redbg    { background-color: #e74c3c; }
+.orangebg { background-color: #e67e22; }
+.yellowbg { background-color: #f1c40f; }
+.greenbg  { background-color: #2ecc71; }
+.bluebg   { background-color: #3498db; }
+.purplebg { background-color: #9b59b6; }
+.blackbg  { background-color: #2c3e50; }
+.whitebg  { background-color: #ecf0f1; }
 
 /* main layout */
 body {
@@ -72,7 +87,7 @@ body {
   padding: 0.5em;
   font-size: 1.5em;
   text-align: center;
-  background-color: lightgrey;
+  font-weight: bold;
 }
 #content {
   flex-basis: 0;
@@ -94,13 +109,11 @@ body {
   font-size: 1.5em !important;
   flex-grow: 1;
   text-align: center;
-  background-color: black;
-  color: white;
   cursor: pointer;
   height: 2em;
 }
-.menuButton.selected {
-  background-color: darkgrey;
+.tab:nth-of-type(1), .tab:nth-of-type(2), #volunteerSignedOut {
+  padding: 1em 0.5em;
 }
 
 /* specific styles */
