@@ -1,6 +1,7 @@
 /* general styles */
 * {
   box-sizing: border-box;
+  -webkit-overflow-scrolling: auto;
 }
 body, html {
   margin: 0;
