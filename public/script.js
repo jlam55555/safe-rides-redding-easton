@@ -27,6 +27,9 @@ $(function() {
     }
     if($(this).data("tab-id") === 3) {
       unsetCalendar();
+      $("#calendar").css({overflowY: "hidden"});
+    } else {
+      $("#calendar").css({overflowY: "auto"});
     }
   });
   $(".menuButton").first().click();
