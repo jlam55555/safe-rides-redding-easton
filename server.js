@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // database dependencies
 var pgp = require("pg-promise")();
-var db = pgp(process.env.DATABASE_URL);
+var db = pgp(process.env.DATABASE_URL + "?ssl=true");
 
 /*
 Database table USERS structure:

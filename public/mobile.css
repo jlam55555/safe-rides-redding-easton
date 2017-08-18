@@ -158,12 +158,12 @@ body {
   line-height: 1;
   height: 1em;
 }
-.volunteer:nth-child(6n) { background-color: rgba(231, 76, 60, 0.5); }
-.volunteer:nth-child(6n+1) { background-color: rgba(230, 126, 34, 0.5); }
-.volunteer:nth-child(6n+2) { background-color: rgba(241, 196, 15, 0.5); }
-.volunteer:nth-child(6n+3) { background-color: rgba(46, 204, 113, 0.5); }
-.volunteer:nth-child(6n+4) { background-color: rgba(52, 152, 219, 0.5); }
-.volunteer:nth-child(6n+5) { background-color: rgba(155, 89, 182, 0.5); }
+.volunteer.color0 { background-color: rgba(231, 76, 60, 0.5); }
+.volunteer.color1 { background-color: rgba(230, 126, 34, 0.5); }
+.volunteer.color2 { background-color: rgba(241, 196, 15, 0.5); }
+.volunteer.color3 { background-color: rgba(46, 204, 113, 0.5); }
+.volunteer.color4 { background-color: rgba(52, 152, 219, 0.5); }
+.volunteer.color5 { background-color: rgba(155, 89, 182, 0.5); }
 .volunteer:hover {
   background-color: grey;
 }

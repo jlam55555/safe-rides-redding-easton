@@ -93,25 +93,37 @@ $(function() {
     $(".volunteer").remove();
     $.post("./getCalendar", {}, function(data) {
       calendar = data;
-      // for dev only
-      //console.log(date);
-      //calendar = {"08/15/17": [{"name":"Jonathan Lam","email":"jlam55555@gmail.com","start":5,"end":10},{"name":"Jessica Lam","email":"jjssclam@aol.com","start":2,"end":23}]};
+      //calendar = {"08/17/17": [{"name":"Jessica Lam","email":"jjssclam@aol.com","start":16,"end":20},{"name":"Jonathan Lam","email":"jlam55555@gmail.com","start":5,"end":10},{"name":"Jessica Lam","email":"jjssclam@aol.com","start":2,"end":14}]};
       $("#calendarDays").hide();
       $("#calendar").show();
       blockSize = $("#calendarVolunteers").height()/24;
       $(".volunteerStripes").css({
         maxHeight: blockSize
       });
+      console.log(calendar);
+      calendar[date] = calendar[date].sort(function(a, b) {
+        if(a.email === user.email) {
+          return -1;
+        }
+        if(b.email === user.email) {
+          return 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      var userCounter = -1;
       for(var i = 0; i < calendar[date].length; i++) {
         if(calendar[date][i].start === null) continue;
+        if(i === 0 || calendar[date][i].email !== calendar[date][i-1].email) { // fix this
+          userCounter++;
+        }
         $("#calendarVolunteers").append(
           $("<div/>")
-            .addClass("volunteer")
+            .addClass("volunteer color" + (userCounter%6))
             .css({
               width: blockSize,
               height: (calendar[date][i].end-calendar[date][i].start+1)*blockSize,
               top: $(".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
-              left: (i+1)*blockSize
+              left: (userCounter+1)*blockSize
             })
             .data("name", calendar[date][i].name)
             .data("start", calendar[date][i].start)
