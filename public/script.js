@@ -17,7 +17,7 @@ $(function() {
   var user = {signedIn: false};
   var addRemoveHandlerRunning = false;
   for(var i = 0; i < 24; i++) {
-    $("#calendarVolunteers").append($("<div/>").html(i%2===1?("0"+i).slice(-2) + ":00":"&#8203;").addClass("volunteerStripes striped"));
+    $("#calendarVolunteers").append($("<div/>").html(i%2===1?("0"+i).slice(-2) + ":00":"&#8203;").addClass("volunteerStripes striped white4"));
   }
   $(".menuButton").click(function() {
     var tabId = $(this).data("tab-id");
@@ -39,6 +39,7 @@ $(function() {
         break;
       case 2:
         $("#header").addClass("greenbg");
+        $("#requestContainer").outerHeight($("#content").height());
         $(".menuButton:nth-of-type(2)").addClass("greenbg");
         break;
       case 3:
@@ -51,6 +52,17 @@ $(function() {
   $(".menuButton").first().click();
   $(".changeTab").click(function() {
     $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
+  });
+
+  // first tab details
+  $("#signupContainer").hide();
+  $("#toSignup").click(function() {
+    $("#signupContainer").show();
+    $("#signinContainer").hide();
+  });
+  $("#toSignin").click(function() {
+    $("#signinContainer").show();
+    $("#signupContainer").hide();
   });
 
   // check if on duty
@@ -90,17 +102,15 @@ $(function() {
     isCalendar = true;
     $("#calendar").height($("#content").height());
     currentDate = date;
-    $(".volunteer").remove();
+    $(".volunteer, .volunteerName").remove();
     $.post("./getCalendar", {}, function(data) {
       calendar = data;
-      //calendar = {"08/17/17": [{"name":"Jessica Lam","email":"jjssclam@aol.com","start":16,"end":20},{"name":"Jonathan Lam","email":"jlam55555@gmail.com","start":5,"end":10},{"name":"Jessica Lam","email":"jjssclam@aol.com","start":2,"end":14}]};
       $("#calendarDays").hide();
       $("#calendar").show();
       blockSize = $("#calendarVolunteers").height()/24;
       $(".volunteerStripes").css({
         maxHeight: blockSize
       });
-      console.log(calendar);
       calendar[date] = calendar[date].sort(function(a, b) {
         if(a.email === user.email) {
           return -1;
@@ -110,20 +120,31 @@ $(function() {
         }
         return a.name.localeCompare(b.name);
       });
+      if(!user.email) return;
+      if(calendar[date].length === 0 || calendar[date][0].email !== user.email) {
+        calendar[date].unshift({name:user.name, email: user.email, start: -1, end: -1});
+      }
       var userCounter = -1;
       for(var i = 0; i < calendar[date].length; i++) {
-        if(calendar[date][i].start === null) continue;
-        if(i === 0 || calendar[date][i].email !== calendar[date][i-1].email) { // fix this
+        if(i === 0 || calendar[date][i].email !== calendar[date][i-1].email) {
           userCounter++;
+          $("#calendarVolunteers").append(
+            $("<div/>")
+              .addClass("volunteerName")
+              .text((calendar[date][i].email === user.email ? "You" : calendar[date][i].name) + (calendar[date][i].start === -1 ? " (empty)" : ""))
+              .css({
+                left: (userCounter+(userCounter === 0 ? 3 : 7))*blockSize
+              })
+          );
         }
         $("#calendarVolunteers").append(
           $("<div/>")
             .addClass("volunteer color" + (userCounter%6))
             .css({
-              width: blockSize,
-              height: (calendar[date][i].end-calendar[date][i].start+1)*blockSize,
-              top: $(".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop,
-              left: (userCounter+1)*blockSize
+              width: blockSize * (userCounter === 0 ? 5 : 1),
+              height: calendar[date][i].start !== -1 ? (calendar[date][i].end-calendar[date][i].start+1)*blockSize : 0,
+              top: calendar[date][i].start !== -1 ? $(".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop : 0,
+              left: (userCounter+(userCounter === 0 ? 3 : 7))*blockSize
             })
             .data("name", calendar[date][i].name)
             .data("start", calendar[date][i].start)

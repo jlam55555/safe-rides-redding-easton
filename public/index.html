@@ -28,31 +28,37 @@
     <div id="content" class="black">
       <div class="tab" data-tab-id="1" data-tab-name="Profile">
         <div class="signedIn">
-          <h3 id="profileName"></h3>
-          <p id="profileEmail"></p>
-          <p id="profilePhone"></p>
-          <p id="onDuty"></p>
-          <button id="signout">Sign Out</button>
+          <div id="profileContainer">
+            <h3 id="profileName"></h3>
+            <p id="profileEmail"></p>
+            <p id="profilePhone"></p>
+            <p id="onDuty"></p>
+            <button id="signout">Sign Out</button>
+          </div>
         </div>
         <div class="signedOut">
-          <!--
-          <h3>Sign Up</h3>
-          <p class="error" id="signupError"></p>
-          <form id="signup">
-            <input type="email" id="signupEmail" placeholder="Email address for login and updates"><br>
-            <input type="password" id="signupPassword" placeholder="Password"><br>
-            <input type="text" id="signupName" placeholder="Full Name for identification"><br>
-            <input type="tel" id="signupPhone" placeholder="Phone Number for contact"><br>
-            <button type="button" id="signupSubmit">Sign Up</button>
-          </form>
-          -->
-          <h3>Sign In</h3>
-          <p class="error" id="signinError"></p>
-          <form id="signin">
-            <input type="email" id="signinEmail" placeholder="Email Address"><br>
-            <input type="password" id="signinPassword" placeholder="Password"><br>
-            <button type="button" id="signinSubmit">Sign In</button>
-          </form>
+          <div id="signinContainer">
+            <h3>Sign In</h3>
+            <p class="error" id="signinError"></p>
+            <form id="signin">
+              <input type="email" id="signinEmail" placeholder="Email Address"><br>
+              <input type="password" id="signinPassword" placeholder="Password"><br>
+              <button type="button" id="signinSubmit">Sign In</button>
+            </form>
+            Or, <button class="buttonLink" id="toSignup">sign up</button>.
+          </div>
+          <div id="signupContainer">
+            <h3>Sign Up</h3>
+            <p class="error" id="signupError"></p>
+            <form id="signup">
+              <input type="email" id="signupEmail" placeholder="Email address for login and updates"><br>
+              <input type="password" id="signupPassword" placeholder="Password"><br>
+              <input type="text" id="signupName" placeholder="Full Name for identification"><br>
+              <input type="tel" id="signupPhone" placeholder="Phone Number for contact"><br>
+              <button type="button" id="signupSubmit">Sign Up</button>
+            </form>
+            Or, <button class="buttonLink" id="toSignin">sign in</button>.
+          </div>
         </div>
       </div>
       <div class="tab" data-tab-id="2" data-tab-name="Request Safe Ride">
@@ -60,10 +66,12 @@
           <button class="changeTab buttonLink" data-tab-id="1">Sign in or sign up</button> before asking for a Safe Ride. 
         </div>
         <div class="signedIn">
-          <input type="text" id="startLocation" placeholder="Current Location"><br>
-          <input type="text" id="destination" placeholder="Destination"><br>
-          <textarea id="situation" placeholder="Situation"></textarea><br>
-          <button type="button">Request a Safe Ride</button>
+          <div id="requestContainer">
+            <input type="text" id="startLocation" placeholder="Current Location">
+            <input type="text" id="destination" placeholder="Destination">
+            <textarea id="situation" placeholder="Situation"></textarea>
+            <button type="button" id="requestButton">Request a Safe Ride</button>
+          </div>
         </div>
       </div>
       <div class="tab" data-tab-id="3" data-tab-name="Volunteer">

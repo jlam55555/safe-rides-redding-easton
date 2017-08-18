@@ -26,6 +26,7 @@ promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 //db.none("CREATE TABLE calendar (json TEXT)").catch((e)=>console.log(e));
 //var json = require("./volunteers.json");
 //db.none("INSERT INTO calendar (json) VALUES ('" + JSON.stringify(json) + "')").catch((e)=>console.log(e));
+//db.none("DROP TABLE calendar").then(()=>db.none("CREATE TABLE calendar (json TEXT)").then(()=>db.none("INSERT INTO calendar (json) VALUES ('{}')").catch(e=>console.log(e))).catch(e=>console.log(e))).catch(e=>console.log(e));
 
 // other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
@@ -238,6 +239,7 @@ app.post("/signup", function(req, res) {
       console.log(name + " signed up under email "  + email + ".");
       // sign in session
       req.session.email = email;
+      req.session.name = name;
       res.json({success: true});
     })
     .catch(function(err) {
@@ -246,13 +248,6 @@ app.post("/signup", function(req, res) {
     });
 });
 app.post("/signin", function(req, res) {
-
-  // for dev only
-  /*req.session.email = "jlam55555@gmail.com";
-  req.session.name = "Jonathan Lam";
-  res.json({success: true, phone: "1234567890", name: "Jonathan Lam"});
-  return;*/
-
   var email = req.body.email;
   var password = req.body.password;
 

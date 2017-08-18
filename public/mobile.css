@@ -30,12 +30,12 @@ input, textarea {
 }
 button:not(.buttonLink) {
   background-color: #ecf0f1;
-  border: none;
   transition: background-color 0.25s;
   color: #2c3e50;
+  border: 1px solid #95a5a6;
 }
 button:not(.buttonLink):focus {
-  background-color: #bdc3c7;
+  background-color: transparent;
 }
 a, button.buttonLink {
   font-family: inherit;
@@ -50,13 +50,16 @@ a, button.buttonLink {
 a:active, button.buttonLink:focus {
   color: darkgrey;
 }
+textarea {
+  resize: none;
+}
 
 /* reusable classes */
 .error {
   color: red;
 }
 .striped:nth-child(2n) {
-  background-color: lightgrey;
+  background-color: #ecf0f1;
 }
 .red    { color: #e74c3c; }
 .orange { color: #e67e22; }
@@ -66,6 +69,7 @@ a:active, button.buttonLink:focus {
 .purple { color: #9b59b6; }
 .black  { color: #2c3e50; }
 .white  { color: #ecf0f1; }
+.white4 { color: #7f8c8d; }
 .redbg    { background-color: #e74c3c; }
 .orangebg { background-color: #e67e22; }
 .yellowbg { background-color: #f1c40f; }
@@ -88,6 +92,7 @@ body {
   font-size: 1.5em;
   text-align: center;
   font-weight: bold;
+  transition: background-color 0.25s;
 }
 #header.webApp {
   padding-top: calc(20px + 0.5em);
@@ -96,7 +101,6 @@ body {
   flex-basis: 0;
   flex-grow: 1;
   overflow-y: auto;
-  /*padding: 1em 0.5em;*/
 }
 #menu {
   flex-shrink: 1;
@@ -114,12 +118,23 @@ body {
   text-align: center;
   cursor: pointer;
   height: 2em;
+  transition: background-color 0.25s;
 }
-.tab:nth-of-type(1), .tab:nth-of-type(2), #volunteerSignedOut {
+#profileContainer, #requestContainer, .signedOut {
   padding: 1em 0.5em;
 }
 
 /* specific styles */
+#requestContainer {
+  display: flex;
+  flex-direction: column;
+}
+#startLocation, #destination, #requestButton {
+  flex-shrink: 1;
+}
+#situation {
+  flex-grow: 1;
+}
 #calendar {
   display: flex;
   flex-direction: column;
@@ -128,9 +143,11 @@ body {
 }
 #unsetCalendar {
   width: 100%;
-  background-color: lightgrey;
   border-radius: 0;
   margin: 0;
+  background-color: #2980b9;
+  color: #ecf0f1;
+  border: none;
 }
 #calendarVolunteers {
   flex-basis: 0;
@@ -158,14 +175,20 @@ body {
   line-height: 1;
   height: 1em;
 }
-.volunteer.color0 { background-color: rgba(231, 76, 60, 0.5); }
-.volunteer.color1 { background-color: rgba(230, 126, 34, 0.5); }
-.volunteer.color2 { background-color: rgba(241, 196, 15, 0.5); }
-.volunteer.color3 { background-color: rgba(46, 204, 113, 0.5); }
-.volunteer.color4 { background-color: rgba(52, 152, 219, 0.5); }
-.volunteer.color5 { background-color: rgba(155, 89, 182, 0.5); }
+.volunteer.color0 { background-color: rgba(231, 76, 60, 0.3); }
+.volunteer.color1 { background-color: rgba(230, 126, 34, 0.3); }
+.volunteer.color2 { background-color: rgba(241, 196, 15, 0.3); }
+.volunteer.color3 { background-color: rgba(46, 204, 113, 0.3); }
+.volunteer.color4 { background-color: rgba(52, 152, 219, 0.3); }
+.volunteer.color5 { background-color: rgba(155, 89, 182, 0.3); }
 .volunteer:hover {
   background-color: grey;
+}
+.volunteerName {
+  position: absolute;
+  width: 100%;
+  transform-origin: 0% 0%;
+  transform: rotate(90deg) translateY(-1em);
 }
 .volunteerInfo {
   color: white;
