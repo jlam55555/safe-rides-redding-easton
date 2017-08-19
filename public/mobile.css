@@ -19,6 +19,9 @@ input, textarea, select, button:not(.buttonLink) {
   border-radius: 0.25em;
   width: 100%;
   margin: 0.5em 0;
+}
+input[type=text], textarea {
+  -webkit-appearance: none;
   box-shadow: none !important;
 }
 input:focus, textarea:focus, select:focus {
