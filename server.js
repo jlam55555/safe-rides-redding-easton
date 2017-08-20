@@ -1,3 +1,45 @@
+var googleMapsClient = require("@google/maps").createClient({
+  key: process.env.GOOGLE_MAPS_API_KEY
+});
+var signedIn = [
+  "21 Wilson Rd., Easton, CT, 06612",
+  "45 Bibbons Rd., Easton, CT, 06612"
+];
+var destination = "100 Black Rock Tpke., Redding, CT, 06896";
+var distanceMatrixParams = {
+  origins: signedIn,
+  destinations: signedIn.concat([destination])
+};
+// finding the shortest route
+googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
+  if(err) {
+    return console.log(err);
+  } else {
+    //console.log(JSON.stringify(data));
+    // data.json.rows[].elements[].distance.value
+    var shortest = {
+      distance: 100000,
+      firstAddress: "",
+      secondAddress: ""
+    };
+    console.log(data.json.rows);
+    for(var i = 0; i < data.json.rows.length; i++) {
+      for(var j = 0; j < data.json.rows[i].elements.length-1; j++) {
+        if(i === j) continue;
+        var distance = data.json.rows[i].elements[j].distance.value + data.json.rows[j].elements[signedIn.length].distance.value;
+        if(distance < shortest.distance) {
+          shortest = {
+            distance: distance,
+            firstAddress: signedIn[i],
+            secondAddress: signedIn[j]
+          };
+        }
+      }
+    }
+    console.log(JSON.stringify(shortest));
+  }
+});
+
 // routing dependencies
 var express = require("express");
 var app = express();
