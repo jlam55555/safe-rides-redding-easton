@@ -1,4 +1,4 @@
-var googleMapsClient = require("@google/maps").createClient({
+/*var googleMapsClient = require("@google/maps").createClient({
   key: process.env.GOOGLE_MAPS_API_KEY
 });
 var signedIn = [
@@ -22,7 +22,6 @@ googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
       firstAddress: "",
       secondAddress: ""
     };
-    console.log(data.json.rows);
     for(var i = 0; i < data.json.rows.length; i++) {
       for(var j = 0; j < data.json.rows[i].elements.length-1; j++) {
         if(i === j) continue;
@@ -38,7 +37,7 @@ googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
     }
     console.log(JSON.stringify(shortest));
   }
-});
+});*/
 
 // routing dependencies
 var express = require("express");
