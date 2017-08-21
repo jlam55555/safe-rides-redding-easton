@@ -39,6 +39,7 @@
             <h3 id="profileName"></h3>
             <p id="profileEmail"></p>
             <p id="profilePhone"></p>
+            <p id="profileAddress"></p>
             <p id="onDuty"></p>
             <button id="signout">Sign Out</button>
           </div>
@@ -60,8 +61,9 @@
             <form id="signup">
               <input type="email" id="signupEmail" placeholder="Email address for login and updates"><br>
               <input type="password" id="signupPassword" placeholder="Password"><br>
-              <input type="text" id="signupName" placeholder="Full Name for identification"><br>
-              <input type="tel" id="signupPhone" placeholder="Phone Number for contact"><br>
+              <input type="text" id="signupName" placeholder="Full name for identification"><br>
+              <input type="tel" id="signupPhone" placeholder="Phone number for contact"><br>
+              <input type="text" id="signupAddress" placeholder="Home address for rides"><br>
               <button type="button" id="signupSubmit">Sign Up</button>
             </form>
             Or, <button class="buttonLink" id="toSignin">sign in</button>.
@@ -75,7 +77,6 @@
         <div class="signedIn">
           <div id="requestContainer">
             <input type="text" id="startLocation" placeholder="Current Location">
-            <input type="text" id="destination" placeholder="Destination">
             <textarea id="situation" placeholder="Situation"></textarea>
             <button type="button" id="requestButton">Request a Safe Ride</button>
           </div>

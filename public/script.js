@@ -36,23 +36,31 @@ $(function() {
         checkOnDuty();
         $("#header").addClass("redbg");
         $(".menuButton:nth-of-type(1)").addClass("redbg");
+        history.pushState({}, null, "/?tab=1");
         break;
       case 2:
         $("#header").addClass("greenbg");
         $("#requestContainer").outerHeight($("#content").height());
         $(".menuButton:nth-of-type(2)").addClass("greenbg");
+        history.pushState({}, null, "/?tab=2");
         break;
       case 3:
         unsetCalendar();
         $("#header").addClass("bluebg");
         $(".menuButton:nth-of-type(3)").addClass("bluebg");
+        history.pushState({}, null, "/?tab=3");
         break;
     }
   });
-  $(".menuButton").first().click();
   $(".changeTab").click(function() {
     $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
   });
+  var match;
+  if((match = window.location.href.match(/\?tab\=([123])$/)) !== undefined) {
+    $(".menuButton:nth-of-type(" + match[1] + ")").click();
+  } else {
+    $(".menuButton").first().click();
+  }
 
   // first tab details
   $("#signupContainer").hide();
@@ -255,13 +263,14 @@ $(function() {
     }
   }
 
-  function signIn(email, name, phone) {
+  function signIn(email, name, phone, address) {
     toggleSignedIn(true);
     $("#profileName").text(name);
     $("#profileEmail").text(email);
     formattedPhone = (phone.length === 11 ? phone.slice(0, 1) + " " : "") + "(" + phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
     $("#profilePhone").text(formattedPhone);
-    user = {signedIn: true, name: name, email: email, phone: phone};
+    $("#profileAddress").text(address);
+    user = {signedIn: true, name: name, email: email, phone: phone, address: address};
   }
 
   $("#signout").click(function() {
@@ -275,7 +284,7 @@ $(function() {
   $.post("/getUserDetails", function(data) {
     if(data.email !== false) {
       console.log("Signed in");
-      signIn(data.email, data.name, data.phone);
+      signIn(data.email, data.name, data.phone, data.address);
     } else {
       console.log("Signed out");
     }
@@ -287,11 +296,13 @@ $(function() {
     var password = $("#signupPassword").val();
     var name = $("#signupName").val();
     var phone = $("#signupPhone").val().replace(/[^0-9]/g, "");
+    var address = $("#signupAddress").val().trim();
     $.post("/signup", {
       email: email,
       password: password,
       name: name,
-      phone: phone
+      phone: phone,
+      address: address
     }, function(data) {
       if(!data.success) {
         var error;
@@ -314,11 +325,14 @@ $(function() {
           case 6:
             error = "Email address is already in use.";
             break;
+          case 7:
+            error = "Address is not valid.";
+            break;
         }
         console.log("Sign up error: " + error);
         $("#signupError").text("Error: " + error);
       } else {
-        signIn(email, name, phone);
+        signIn(email, name, phone, data.address);
       }
     }, "json");
   });
@@ -344,7 +358,7 @@ $(function() {
         console.log("Sign in error: " + error);
         $("#signinError").text("Error: " + error);
       } else {
-        signIn(email, data.name, data.phone);
+        signIn(email, data.name, data.phone, data.address);
         console.log("Signed in success");
       }
     }, "json");

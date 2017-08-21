@@ -65,16 +65,13 @@ Database table USERS structure:
 | name     | VARCHAR(50)  |
 | password | VARCHAR(64)  |
 | phone    | VARCHAR(11)  |
+| address  | VARCHAR(100) |
 +----------+--------------+
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 // reset database (for development purposes only)
 //db.none("DROP TABLE users").catch((e)=>console.log(e));
-//db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL)").catch(function(err){console.log(err)});
-//db.none("DROP TABLE calendar").catch((e)=>console.log(e));
-//db.none("CREATE TABLE calendar (json TEXT)").catch((e)=>console.log(e));
-//var json = require("./volunteers.json");
-//db.none("INSERT INTO calendar (json) VALUES ('" + JSON.stringify(json) + "')").catch((e)=>console.log(e));
+//db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL, address VARCHAR(100) NOT NULL)").catch(function(err){console.log(err)});
 //db.none("DROP TABLE calendar").then(()=>db.none("CREATE TABLE calendar (json TEXT)").then(()=>db.none("INSERT INTO calendar (json) VALUES ('{}')").catch(e=>console.log(e))).catch(e=>console.log(e))).catch(e=>console.log(e));
 
 // other dependencies for password hashing, sessions, file-writing
@@ -110,12 +107,13 @@ function sendSMS(to, body) {
 app.post("/getUserDetails", function(req, res) {
   var ssn = req.session;
   if(ssn.email !== undefined) {
-    db.one("SELECT name, phone FROM users WHERE email='" + ssn.email + "'")
+    db.one("SELECT name, phone, address FROM users WHERE email='" + ssn.email + "'")
       .then(function(data) {
         res.json({
           email: ssn.email,
           phone: data.phone,
-          name: data.name
+          name: data.name,
+          address: data.address
         });
       })
       .catch(function(err) {
@@ -254,6 +252,7 @@ app.post("/signup", function(req, res) {
   var password = req.body.password;
   var name = req.body.name;
   var phone = req.body.phone;
+  var address = req.body.address;
 
   // input validation
   // error code 1: email validation (regex courtesy of http://emailregex.com/)
@@ -282,30 +281,41 @@ app.post("/signup", function(req, res) {
     return;
   }
 
-  // create account
-  db.none("INSERT INTO users (email, name, password, phone) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "')")
-    .then(function() {
-      console.log(name + " signed up under email "  + email + ".");
-      // sign in session
-      req.session.email = email;
-      req.session.name = name;
-      res.json({success: true});
-    })
-    .catch(function(err) {
-      // error code 6: email taken
-      res.json({success: false, error: 6});
-    });
+  googleMapsClient.geocode({address: address}, function(err, data) {
+    var hasStreetAddress = data.json.status === "OK" && data.json.results.length > 0 && data.json.results[0].address_components.filter(function(elem) {
+      return elem.types.indexOf("street_number") === 0;
+    }).length === 1;
+    if(hasStreetAddress) {
+      address = data.json.results[0].formatted_address;
+      // create account
+      db.none("INSERT INTO users (email, name, password, phone, address) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "', '" + address + "')")
+        .then(function() {
+          console.log(name + " signed up under email "  + email + ".");
+          // sign in session
+          req.session.email = email;
+          req.session.name = name;
+          res.json({success: true, address: address});
+        })
+        .catch(function(err) {
+          // error code 6: email taken
+          res.json({success: false, error: 6});
+        });
+    } else {
+      // error code 7: invalid address
+      res.json({success: false, error: 7});
+    }
+  });
 });
 app.post("/signin", function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
 
-  db.one("SELECT phone, name, password FROM users WHERE email='" + email + "'")
+  db.one("SELECT phone, name, address, password FROM users WHERE email='" + email + "'")
     .then(function(data) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
         req.session.name = data.name;
-        res.json({success: true, phone: data.phone, name: data.name});
+        res.json({success: true, phone: data.phone, name: data.name, address: data.address});
       } else {
         // error code 2: incorrect password
         res.json({success: false, error: 2});
