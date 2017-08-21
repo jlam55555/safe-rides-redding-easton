@@ -56,13 +56,13 @@ $(function() {
     $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
   });
   var match;
-  if((match = window.location.href.match(/\?tab\=([123])$/)) !== undefined) {
+  if((match = window.location.href.match(/\?tab\=([123])$/)) !== null) {
     $(".menuButton:nth-of-type(" + match[1] + ")").click();
   } else {
     $(".menuButton").first().click();
   }
 
-  // first tab details
+  // profile tab details
   $("#signupContainer").hide();
   $("#toSignup").click(function() {
     $("#signupContainer").show();
@@ -73,11 +73,20 @@ $(function() {
     $("#signupContainer").hide();
   });
 
+  // request ride tab details
+  $("#requestButton").click(function() {
+    var startLocation = $("#startLocation").val().trim();
+    var situation = $("#situation").val();
+    $.post("/request", {startLocation: startLocation, situation: situation}, function(data) {
+      console.log(JSON.stringify(data));
+    }, "json");
+  });
+
   // check if on duty
   var dateFormat = new Intl.DateTimeFormat("en-us", {year: "2-digit", month: "2-digit", day: "2-digit"});
   setCalendar(dateFormat.format(new Date()));
   function checkOnDuty() {
-    if(!user.signedIn) return;
+    if(!user.signedIn || !calendar) return;
     for(var i = 0; i < calendar[currentDate].length; i++) {
       if(
         calendar[currentDate][i].email === user.email
@@ -90,7 +99,6 @@ $(function() {
     }
     $("#onDuty").text("Not on duty.");
   }
-  setInterval(checkOnDuty, 1000);
 
   // calendar details
   var calendar;
@@ -222,7 +230,6 @@ $(function() {
           endIndex = index;
         }
       });
-      console.log(startIndex, endIndex);
       selectionElement.remove();
       $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       var eventType = prompt("Add or remove time?");
@@ -240,6 +247,7 @@ $(function() {
           console.log(error);
           addRemoveHandlerRunning = false;
           addRemoveHandler();
+          checkOnDuty();
         } else {
           addRemoveHandlerRunning = false;
           setCalendar(currentDate);
@@ -271,6 +279,7 @@ $(function() {
     $("#profilePhone").text(formattedPhone);
     $("#profileAddress").text(address);
     user = {signedIn: true, name: name, email: email, phone: phone, address: address};
+    checkOnDuty();
   }
 
   $("#signout").click(function() {

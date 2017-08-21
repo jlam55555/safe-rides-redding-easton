@@ -1,52 +1,3 @@
-var googleMapsClient = require("@google/maps").createClient({
-  key: process.env.GOOGLE_MAPS_API_KEY
-});
-var signedIn = [
-  "21 Wilson Rd., Easton, CT, 06612",
-  "45 Bibbons Rd., Easton, CT, 06612",
-  "150 Adams Rd., Easton, CT, 06612",
-  "70 Kellers Farm Rd., Easton, CT, 06612"
-];
-var start = "100 Black Rock Tpke., Redding, CT, 06896";
-var finish = "289 Old Oak Rd., Easton, CT, 06896";
-var distanceMatrixParams = {
-  origins: signedIn,
-  destinations: signedIn.concat([start])
-};
-// finding the shortest route
-googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
-  if(err) {
-    return console.log(err);
-  } else {
-    var shortest = {
-      distance: 100000,
-      firstAddress: "",
-      secondAddress: ""
-    };
-    for(var i = 0; i < data.json.rows.length; i++) {
-      for(var j = 0; j < data.json.rows[i].elements.length-1; j++) {
-        if(i === j) continue;
-        var distance = data.json.rows[i].elements[j].distance.value + data.json.rows[j].elements[signedIn.length].distance.value;
-        if(distance < shortest.distance) {
-          shortest = {
-            distance: distance,
-            firstAddress: i,
-            secondAddress: j
-          };
-        }
-      }
-    }
-    var stops = [
-      signedIn[shortest.firstAddress],
-      signedIn[shortest.secondAddress],
-      start,
-      finish,
-      signedIn[shortest.firstAddress]
-    ];
-    var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
-  }
-});
-
 // routing dependencies
 var express = require("express");
 var app = express();
@@ -74,16 +25,6 @@ promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 //db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL, address VARCHAR(100) NOT NULL)").catch(function(err){console.log(err)});
 //db.none("DROP TABLE calendar").then(()=>db.none("CREATE TABLE calendar (json TEXT)").then(()=>db.none("INSERT INTO calendar (json) VALUES ('{}')").catch(e=>console.log(e))).catch(e=>console.log(e))).catch(e=>console.log(e));
 
-// other dependencies for password hashing, sessions, file-writing
-var passwordHash = require("password-hash");
-var session = require("express-session");
-app.use(session({
-  secret:"blahblahsecretysecret",
-  resave: false,
-  saveUninitialized: false
-}));
-var fs = require("fs");
-
 // twilio for sending text messages
 var twilioSid = process.env.TWILIO_SID;
 var twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
@@ -102,6 +43,21 @@ function sendSMS(to, body) {
       console.log("err: " + err);
     });
 }
+
+// google maps for directions and distance
+var googleMapsClient = require("@google/maps").createClient({
+  key: process.env.GOOGLE_MAPS_API_KEY
+});
+
+// other dependencies for password hashing, sessions, file-writing
+var passwordHash = require("password-hash");
+var session = require("express-session");
+app.use(session({
+  secret:"blahblahsecretysecret",
+  resave: false,
+  saveUninitialized: false
+}));
+var fs = require("fs");
 
 // post requests
 app.post("/getUserDetails", function(req, res) {
@@ -124,12 +80,14 @@ app.post("/getUserDetails", function(req, res) {
   }
 });
 // send reminders about volunteer shifts if necessary (needs to happen every hour)
+var volunteers = [];
 function checkVolunteers() {
   var date = dateFormat.format(new Date());
   var currentHour = (24+new Date().getHours()-4)%24; // four hour time shift from UTC/GMT to EST
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].start === currentHour) {
       console.log("Sending out reminder to " + calendar[date][i].name + " for volunteer shift from " + calendar[date][i].start + ":00 to " + calendar[date][i].end + ":59.");
+      volunteers.push(calendar[date][i].email);
       (function(i) {
         db.one("SELECT phone FROM users WHERE email='" + calendar[date][i].email + "'")
           .then(function(data) {
@@ -162,6 +120,7 @@ db.one("SELECT json FROM calendar")
     console.log(err);
   });
 app.post("/getCalendar", function(req, res) {
+  if(req.session.email === undefined) return;
   res.json(calendar);
 });
 app.post("/addTime", function(req, res) {
@@ -243,6 +202,72 @@ app.post("/removeTime", function(req, res) {
       console.log(err);
     });
   res.json({success: true});
+});
+// requesting a service
+app.post("/request", function(req, res) {
+  if(req.session.email === undefined) return;
+  if(volunteers.length < 2) volunteers = volunteers.concat(["chrisvass1@gmail.com","jlam55555@gmail.com"]);
+  var query = "SELECT email, address FROM users WHERE email='" + req.session.email + "'";
+  for(var volunteer of volunteers) {
+    query += " OR email='" + volunteer + "'";
+  }
+  db.many(query)
+    .then(function(data) {
+      var start = req.body.startLocation;
+      var finishIndex;
+      var finish = data.filter(function(item, index) {
+        if(item.email === req.session.email) {
+          finishIndex = index;
+          return true;
+        }
+        return false;
+      })[0].address;
+      data.splice(finishIndex, 1);
+      var volunteerAddresses = data.map(function(item) {
+        return item.address;
+      });
+      var distanceMatrixParams = {
+        origins: volunteerAddresses,
+        destinations: volunteerAddresses.concat([start])
+      };
+      // finding the shortest route
+      googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
+        if(err) {
+          return console.log(err);
+        } else {
+          var shortest = {
+            distance: 100000,
+            firstAddress: "",
+            secondAddress: ""
+          };
+          for(var i = 0; i < data.json.rows.length; i++) {
+            for(var j = 0; j < data.json.rows[i].elements.length-1; j++) {
+              if(i === j) continue;
+              var distance = data.json.rows[i].elements[j].distance.value + data.json.rows[j].elements[volunteerAddresses.length].distance.value;
+              if(distance < shortest.distance) {
+                shortest = {
+                  distance: distance,
+                  firstAddress: i,
+                  secondAddress: j
+                };
+              }
+            }
+          }
+          var stops = [
+            volunteerAddresses[shortest.firstAddress],
+            volunteerAddresses[shortest.secondAddress],
+            start,
+            finish,
+            volunteerAddresses[shortest.firstAddress]
+          ];
+          var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
+          res.json({directionsUrl: directionsUrl, route: stops});
+        }
+      });
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
 });
 
 // routing
