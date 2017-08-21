@@ -1,22 +1,23 @@
-/*var googleMapsClient = require("@google/maps").createClient({
+var googleMapsClient = require("@google/maps").createClient({
   key: process.env.GOOGLE_MAPS_API_KEY
 });
 var signedIn = [
   "21 Wilson Rd., Easton, CT, 06612",
-  "45 Bibbons Rd., Easton, CT, 06612"
+  "45 Bibbons Rd., Easton, CT, 06612",
+  "150 Adams Rd., Easton, CT, 06612",
+  "70 Kellers Farm Rd., Easton, CT, 06612"
 ];
-var destination = "100 Black Rock Tpke., Redding, CT, 06896";
+var start = "100 Black Rock Tpke., Redding, CT, 06896";
+var finish = "289 Old Oak Rd., Easton, CT, 06896";
 var distanceMatrixParams = {
   origins: signedIn,
-  destinations: signedIn.concat([destination])
+  destinations: signedIn.concat([start])
 };
 // finding the shortest route
 googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
   if(err) {
     return console.log(err);
   } else {
-    //console.log(JSON.stringify(data));
-    // data.json.rows[].elements[].distance.value
     var shortest = {
       distance: 100000,
       firstAddress: "",
@@ -29,15 +30,22 @@ googleMapsClient.distanceMatrix(distanceMatrixParams, function(err, data) {
         if(distance < shortest.distance) {
           shortest = {
             distance: distance,
-            firstAddress: signedIn[i],
-            secondAddress: signedIn[j]
+            firstAddress: i,
+            secondAddress: j
           };
         }
       }
     }
-    console.log(JSON.stringify(shortest));
+    var stops = [
+      signedIn[shortest.firstAddress],
+      signedIn[shortest.secondAddress],
+      start,
+      finish,
+      signedIn[shortest.firstAddress]
+    ];
+    var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
   }
-});*/
+});
 
 // routing dependencies
 var express = require("express");
