@@ -1,6 +1,7 @@
 // routing dependencies
 var express = require("express");
 var app = express();
+var http = require("http").Server(app);
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -10,20 +11,41 @@ var pgp = require("pg-promise")();
 var db = pgp(process.env.DATABASE_URL + "?ssl=true");
 
 /*
-Database table USERS structure:
+Database table users structure:
 +----------+--------------+
-| email    | VARCHAR(254) |
-| name     | VARCHAR(50)  |
-| password | VARCHAR(64)  |
-| phone    | VARCHAR(11)  |
-| address  | VARCHAR(100) |
+| id       | serial       |
+| email    | varchar(254) |
+| name     | varchar(50)  |
+| password | varchar(64)  |
+| phone    | varchar(11)  |
+| address  | varchar(100) |
 +----------+--------------+
+Database table calendar structure:
++------+------+
+| json | text |
++------+------+
+Database table missions structure:
++-----------+--------------------------+
+| id        | serial                   |
+| w0        | timestamp with time zone |
+| w1        | timestamp with time zone |
+| w2        | timestamp with time zone |
+| w3        | timestamp with time zone |
+| w4        | timestamp with time zone |
+| w5        | timestamp with time zone |
+| situation | varchar(500)             |
+| comments  | varchar(500)             |
+| requester | integer                  |
+| rescuer1  | integer                  |
+| rescuer2  | integer                  |
++-----------+--------------------------+
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
-// reset database (for development purposes only)
-//db.none("DROP TABLE users").catch((e)=>console.log(e));
-//db.none("CREATE TABLE users (email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL, address VARCHAR(100) NOT NULL)").catch(function(err){console.log(err)});
-//db.none("DROP TABLE calendar").then(()=>db.none("CREATE TABLE calendar (json TEXT)").then(()=>db.none("INSERT INTO calendar (json) VALUES ('{}')").catch(e=>console.log(e))).catch(e=>console.log(e))).catch(e=>console.log(e));
+/* reset database (for development purposes only)
+CREATE TABLE users (id SERIAL, email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL unique, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL unique, address VARCHAR(100) NOT NULL unique);
+DROP TABLE calendar;CREATE TABLE calendar (json TEXT);INSERT INTO calendar (json) VALUES ('{}');
+CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, w4 timestamp with time zone, w5 timestamp with time zone, situation varchar(500), requester integer not null, rescuer1 integer not null, rescuer2 integer not null, comments varchar(500));
+*/
 
 // twilio for sending text messages
 var twilioSid = process.env.TWILIO_SID;
@@ -52,12 +74,30 @@ var googleMapsClient = require("@google/maps").createClient({
 // other dependencies for password hashing, sessions, file-writing
 var passwordHash = require("password-hash");
 var session = require("express-session");
-app.use(session({
+var appSession = session({
   secret:"blahblahsecretysecret",
   resave: false,
-  saveUninitialized: false
-}));
+  saveUninitialized: true
+});
+app.use(appSession);
 var fs = require("fs");
+
+// socket.io
+var io = require("socket.io")(http);
+var sharedsession = require("express-socket.io-session");
+io.use(sharedsession(appSession), { autoSave: true });
+var sockets = [];
+io.on("connection", function(socket) {
+  sockets.push(socket);
+  socket.on("signin", function() {
+    socket.handshake.session.reload(function(err) {
+      err && console.log("error: " + err);
+    });
+  });
+  socket.on("disconnect", function() {
+    sockets.splice(sockets.indexOf(socket), 1);
+  });
+});
 
 // post requests
 app.post("/getUserDetails", function(req, res) {
@@ -261,7 +301,27 @@ app.post("/request", function(req, res) {
             volunteerAddresses[shortest.firstAddress]
           ];
           var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
-          res.json({directionsUrl: directionsUrl, route: stops});
+          res.json(JSON.stringify({directionsUrl: directionsUrl, route: stops}));
+          // setInterval for dev only
+          var x = -1;
+          var t = setInterval(function() {
+            if(x++ === 6) {
+              clearInterval(t);
+              return;
+            }
+
+            // for drivee
+            var driveeSocket = sockets.filter(function(socket) {
+              return socket.handshake.session.email === req.session.email;
+            });
+            if(driveeSocket.length !== 0) {
+              driveeSocket[0].emit("testing", x);
+            }
+            
+            // for driver 1
+
+            // for driver 2
+          }, 1000);
         }
       });
     })
@@ -340,6 +400,9 @@ app.post("/signin", function(req, res) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
         req.session.name = data.name;
+        req.session.save(function(err) {
+          console.log(err);
+        });
         res.json({success: true, phone: data.phone, name: data.name, address: data.address});
       } else {
         // error code 2: incorrect password
@@ -358,6 +421,6 @@ app.post("/signout", function(req, res) {
 });
 app.use("/", express.static("public"));
 
-app.listen(process.env.PORT || 5000, function() {
+http.listen(process.env.PORT || 5000, function() {
   console.log("Listening on port " + (process.env.PORT || 5000) + ".");
 });

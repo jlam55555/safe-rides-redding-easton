@@ -12,6 +12,12 @@ $(function() {
     event.preventDefault();
   });
 
+  // socket.io
+  var socket = io();
+  socket.on("testing", function(i) {
+    console.log("testing " + i);
+  });
+
   // tab details
   var currentTab = 1;
   var user = {signedIn: false};
@@ -280,6 +286,7 @@ $(function() {
     $("#profileAddress").text(address);
     user = {signedIn: true, name: name, email: email, phone: phone, address: address};
     checkOnDuty();
+    socket.emit("signin");
   }
 
   $("#signout").click(function() {
