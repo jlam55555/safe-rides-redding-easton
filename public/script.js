@@ -98,6 +98,7 @@ $(function() {
       if(data.success === true) {
         $(".driver1").text(data.driver1);
         $(".driver2").text(data.driver2);
+        console.log(data.directionsUrl);
         $("#mission").show();
         $("#requesting").hide();
         for(var i = 0; i < 6; i++) {

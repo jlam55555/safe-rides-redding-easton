@@ -252,23 +252,23 @@ app.post("/removeTime", function(req, res) {
 app.post("/request", function(req, res) {
   if(req.session.email === undefined) return;
   if(volunteers.length < 2) volunteers = volunteers.concat([{email: "chrisvass1@gmail.com", name: "Christopher Vassallo"},{email: "jlam55555@gmail.com", name: "Jonathan Lam"}]);
-  var query = "SELECT email, address FROM users WHERE email='" + req.session.email + "'";
+  var query = "SELECT name, email, address FROM users WHERE email='" + req.session.email + "'";
   for(var volunteer of volunteers) {
     query += " OR email='" + volunteer.email + "'";
   }
   db.many(query)
-    .then(function(data) {
+    .then(function(dbData) {
       var start = req.body.startLocation;
       var finishIndex;
-      var finish = data.filter(function(item, index) {
+      var finish = dbData.filter(function(item, index) {
         if(item.email === req.session.email) {
           finishIndex = index;
           return true;
         }
         return false;
       })[0].address;
-      data.splice(finishIndex, 1);
-      var volunteerAddresses = data.map(function(item) {
+      dbData.splice(finishIndex, 1);
+      var volunteerAddresses = dbData.map(function(item) {
         return item.address;
       });
       var distanceMatrixParams = {
@@ -306,9 +306,12 @@ app.post("/request", function(req, res) {
             volunteerAddresses[shortest.firstAddress]
           ];
           var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
-          var driver1Name = volunteers[shortest.firstAddress].name;
-          var driver2Name = volunteers[shortest.secondAddress].name;
-          var driver1Name = volunteers[shortest.firstAddress].name;
+          var driver1Name = dbData.filter(function(volunteer) {
+            return volunteer.address === volunteerAddresses[shortest.firstAddress];
+          })[0].name;
+          var driver2Name = dbData.filter(function(volunteer) {
+            return volunteer.address === volunteerAddresses[shortest.secondAddress];
+          })[0].name;
           var driveeName = req.session.name;
 
           res.json({success: true, directionsUrl: directionsUrl, route: stops, driver1: driver1Name, driver2: driver2Name});
