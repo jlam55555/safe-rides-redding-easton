@@ -94,6 +94,11 @@ io.on("connection", function(socket) {
       err && console.log("error: " + err);
     });
   });
+  socket.on("signout", function() {
+    socket.handshake.session.reload(function(err) {
+      err && console.log("error: " + err);
+    });
+  });
   socket.on("disconnect", function() {
     sockets.splice(sockets.indexOf(socket), 1);
   });

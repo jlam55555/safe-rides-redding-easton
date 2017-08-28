@@ -18,6 +18,14 @@ $(function() {
     console.log("testing " + i);
   });
 
+  // general button pressing
+  $(document).on("keyup", "textarea, input", function(event) {
+    event.which === 13 && $(this).nextAll().filter("button").first().click();
+  });
+  function resetInputs() {
+    $("input, textarea").val("");
+  }
+
   // tab details
   var currentTab = 1;
   var user = {signedIn: false};
@@ -60,6 +68,7 @@ $(function() {
   });
   $(".changeTab").click(function() {
     $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
+    resetInputs();
   });
   var match;
   if((match = window.location.href.match(/\?tab\=([123])$/)) !== null) {
@@ -287,6 +296,7 @@ $(function() {
     user = {signedIn: true, name: name, email: email, phone: phone, address: address};
     checkOnDuty();
     socket.emit("signin");
+    resetInputs();
   }
 
   $("#signout").click(function() {
@@ -294,6 +304,8 @@ $(function() {
     toggleSignedIn(false);
     user = {signedIn: false};
     console.log("Signed out successfully");
+    socket.emit("signout");
+    resetInputs();
   });
 
   // check if signed in or not
