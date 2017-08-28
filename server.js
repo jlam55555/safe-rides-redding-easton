@@ -132,7 +132,7 @@ function checkVolunteers() {
   for(var i = 0; i < calendar[date].length; i++) {
     if(calendar[date][i].start === currentHour) {
       console.log("Sending out reminder to " + calendar[date][i].name + " for volunteer shift from " + calendar[date][i].start + ":00 to " + calendar[date][i].end + ":59.");
-      volunteers.push(calendar[date][i].email);
+      volunteers.push({email: calendar[date][i].email, name: calendar[date][i].name});
       (function(i) {
         db.one("SELECT phone FROM users WHERE email='" + calendar[date][i].email + "'")
           .then(function(data) {
@@ -251,10 +251,10 @@ app.post("/removeTime", function(req, res) {
 // requesting a service
 app.post("/request", function(req, res) {
   if(req.session.email === undefined) return;
-  if(volunteers.length < 2) volunteers = volunteers.concat(["chrisvass1@gmail.com","jlam55555@gmail.com"]);
+  if(volunteers.length < 2) volunteers = volunteers.concat([{email: "chrisvass1@gmail.com", name: "Christopher Vassallo"},{email: "jlam55555@gmail.com", name: "Jonathan Lam"}]);
   var query = "SELECT email, address FROM users WHERE email='" + req.session.email + "'";
   for(var volunteer of volunteers) {
-    query += " OR email='" + volunteer + "'";
+    query += " OR email='" + volunteer.email + "'";
   }
   db.many(query)
     .then(function(data) {
@@ -306,7 +306,12 @@ app.post("/request", function(req, res) {
             volunteerAddresses[shortest.firstAddress]
           ];
           var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
-          res.json(JSON.stringify({directionsUrl: directionsUrl, route: stops}));
+          var driver1Name = volunteers[shortest.firstAddress].name;
+          var driver2Name = volunteers[shortest.secondAddress].name;
+          var driver1Name = volunteers[shortest.firstAddress].name;
+          var driveeName = req.session.name;
+
+          res.json({success: true, directionsUrl: directionsUrl, route: stops, driver1: driver1Name, driver2: driver2Name});
           // setInterval for dev only
           var x = -1;
           var t = setInterval(function() {
@@ -320,7 +325,7 @@ app.post("/request", function(req, res) {
               return socket.handshake.session.email === req.session.email;
             });
             if(driveeSocket.length !== 0) {
-              driveeSocket[0].emit("testing", x);
+              driveeSocket[0].emit("w" + x);
             }
             
             // for driver 1
@@ -423,6 +428,7 @@ app.post("/signin", function(req, res) {
 app.post("/signout", function(req, res) {
   // sign out and return to homepage
   req.session.destroy();
+  req.session = {};
 });
 app.use("/", express.static("public"));
 

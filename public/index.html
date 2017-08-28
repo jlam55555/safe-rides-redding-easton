@@ -78,9 +78,37 @@
         </div>
         <div class="signedIn">
           <div id="requestContainer">
-            <input type="text" id="startLocation" placeholder="Current Location">
-            <textarea id="situation" placeholder="Situation"></textarea>
-            <button type="button" id="requestButton">Request a Safe Ride</button>
+            <div id="requesting">
+              <input type="text" id="startLocation" placeholder="Current Location">
+              <textarea id="situation" placeholder="Situation"></textarea>
+              <button type="button" id="requestButton">Request a Safe Ride</button>
+            </div>
+            <div id="mission">
+              <p>
+                <i class="fa fa-fw fa-ellipsis-h"></i>
+                <span><span class="driver1"></span> began the mission.</span>
+              </p>
+              <p>
+                <i class="fa fa-fw fa-ellipsis-h"></i>
+                <span><span class="driver2"></span> has been picked up by <span class="driver1"></span>.</span>
+              </p>
+              <p>
+                <i class="fa fa-fw fa-ellipsis-h"></i>
+                <span>You have been picked up at the start location.</span>
+              </p>
+              <p>
+                <i class="fa fa-fw fa-ellipsis-h"></i>
+                <span>You have been delivered home.</span>
+              </p>
+              <p>
+                <i class="fa fa-fw fa-ellipsis-h"></i>
+                <span><span class="driver2"></span> has been delivered home.</span>
+              </p>
+              <p>
+                <i class="fa fa-fw fa-ellipsis-h"></i>
+                <span><span class="driver1"></span> has finished the mission.</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

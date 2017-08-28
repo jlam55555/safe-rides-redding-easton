@@ -126,7 +126,7 @@ body {
   height: 2em;
   transition: background-color 0.25s;
 }
-#profileContainer, #requestContainer, .signedOut {
+#profileContainer, #requesting, .signedOut {
   padding: 1em 0.5em;
 }
 
@@ -134,12 +134,51 @@ body {
 #requestContainer {
   display: flex;
   flex-direction: column;
+  flex-wrap: nowrap;
+}
+#requesting, #mission {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
 }
 #startLocation, #destination, #requestButton {
   flex-shrink: 1;
 }
 #situation {
   flex-grow: 1;
+}
+#mission > p {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+}
+#mission > p:nth-child(2n) {
+  background-color: #ecf0f1;
+}
+#mission > p > i {
+  padding: 0.5em;
+  font-size: 1.5em;
+  border-radius: 100%;
+  height: 2em;
+  flex-basis: 2em;
+  width: 2em;
+  text-align: center;
+  margin: 0.5em;
+  color: white;
+}
+.fa-ellipsis-h {
+  background-color: #e74c3c;
+}
+.fa-check {
+  background-color: #2ecc71;
+}
+#mission > p > span {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 #calendar {
   display: flex;

@@ -56,6 +56,8 @@ $(function() {
         $("#header").addClass("greenbg");
         $("#requestContainer").outerHeight($("#content").height());
         $(".menuButton:nth-of-type(2)").addClass("greenbg");
+        $("#requesting").show();
+        $("#mission").hide();
         history.pushState({}, null, "/?tab=2");
         break;
       case 3:
@@ -93,7 +95,21 @@ $(function() {
     var startLocation = $("#startLocation").val().trim();
     var situation = $("#situation").val();
     $.post("/request", {startLocation: startLocation, situation: situation}, function(data) {
-      console.log(JSON.stringify(data));
+      if(data.success === true) {
+        $(".driver1").text(data.driver1);
+        $(".driver2").text(data.driver2);
+        $("#mission").show();
+        $("#requesting").hide();
+        for(var i = 0; i < 6; i++) {
+          (function(i) {
+            socket.once("w" + i, function() {
+              $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-check");
+            });
+          })(i);
+        }
+      } else {
+        console.log(data.error);
+      }
     }, "json");
   });
 
