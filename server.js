@@ -19,6 +19,7 @@ Database table users structure:
 | password | varchar(64)  |
 | phone    | varchar(11)  |
 | address  | varchar(100) |
+| mission  | integer      |
 +----------+--------------+
 Database table calendar structure:
 +------+------+
@@ -42,7 +43,7 @@ Database table missions structure:
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 /* reset database (for development purposes only)
-CREATE TABLE users (id SERIAL, email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL unique, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL unique, address VARCHAR(100) NOT NULL unique);
+CREATE TABLE users (id SERIAL, email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL unique, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL unique, address VARCHAR(100) NOT NULL unique, mission INTEGER);
 DROP TABLE calendar;CREATE TABLE calendar (json TEXT);INSERT INTO calendar (json) VALUES ('{}');
 CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, w4 timestamp with time zone, w5 timestamp with time zone, situation varchar(500), requester integer not null, rescuer1 integer not null, rescuer2 integer not null, comments varchar(500));
 */
@@ -76,7 +77,7 @@ var passwordHash = require("password-hash");
 var session = require("express-session");
 var appSession = session({
   secret:"blahblahsecretysecret",
-  resave: false,
+  resave: true,
   saveUninitialized: true
 });
 app.use(appSession);
@@ -89,16 +90,22 @@ io.use(sharedsession(appSession), { autoSave: true });
 var sockets = [];
 io.on("connection", function(socket) {
   sockets.push(socket);
-  socket.on("signin", function() {
+  socket.init = function() {
+    // check for mission
+    // mission should be set in data
+    // WORKING HERE
+    //if(mission)
+    //  socket.emit("missionData")
+    //else
+    //  socket.emit("nomissiondata")
+  };
+  socket.init();
+  socket.reload = function() {
     socket.handshake.session.reload(function(err) {
       err && console.log("error: " + err);
+      socket.init();
     });
-  });
-  socket.on("signout", function() {
-    socket.handshake.session.reload(function(err) {
-      err && console.log("error: " + err);
-    });
-  });
+  };
   socket.on("disconnect", function() {
     sockets.splice(sockets.indexOf(socket), 1);
   });
@@ -110,6 +117,9 @@ app.post("/getUserDetails", function(req, res) {
   if(ssn.email !== undefined) {
     db.one("SELECT name, phone, address FROM users WHERE email='" + ssn.email + "'")
       .then(function(data) {
+
+        // CHECK FOR MISSION STATUS
+
         res.json({
           email: ssn.email,
           phone: data.phone,
@@ -118,7 +128,7 @@ app.post("/getUserDetails", function(req, res) {
         });
       })
       .catch(function(err) {
-        console.log(err);
+        console.log("/getUserDetails: " + err);
       });
   } else {
     res.json({email: false});
@@ -332,8 +342,22 @@ app.post("/request", function(req, res) {
             }
             
             // for driver 1
+            var driver1Socket = sockets.filter(function(socket) {
+              console.log(socket.handshake.session.name, driver1Name);
+              return socket.handshake.session.name === driver1Name;
+            });
+            if(driver1Socket.length !== 0) {
+              driver1Socket[0].emit("w" + x);
+            }
 
             // for driver 2
+            var driver2Socket = sockets.filter(function(socket) {
+              console.log(socket.handshake.session.name, driver2Name);
+              return socket.handshake.session.name === driver2Name;
+            });
+            if(driver2Socket.length !== 0) {
+              driver2Socket[0].emit("w" + x);
+            }
           }, 1000);
         }
       });
@@ -413,8 +437,12 @@ app.post("/signin", function(req, res) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
         req.session.name = data.name;
+        var socket = sockets.filter(function(socket) {
+          return socket.handshake.session.id === req.session.id;
+        })[0];
         req.session.save(function(err) {
-          console.log(err);
+          err && console.log(err);
+          socket.reload();
         });
         res.json({success: true, phone: data.phone, name: data.name, address: data.address});
       } else {
@@ -429,9 +457,13 @@ app.post("/signin", function(req, res) {
     });
 });
 app.post("/signout", function(req, res) {
-  // sign out and return to homepage
-  req.session.destroy();
-  req.session = {};
+  var socket = sockets.filter(function(socket) {
+    return socket.handshake.session.email === req.session.email;
+  })[0];
+  req.session.regenerate(function(err) {
+    err && console.log(err);
+    socket.reload();
+  });
 });
 app.use("/", express.static("public"));
 

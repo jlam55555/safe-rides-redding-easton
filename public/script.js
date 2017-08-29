@@ -14,9 +14,6 @@ $(function() {
 
   // socket.io
   var socket = io();
-  socket.on("testing", function(i) {
-    console.log("testing " + i);
-  });
 
   // general button pressing
   $(document).on("keyup", "textarea, input", function(event) {
@@ -323,7 +320,6 @@ $(function() {
     $("#profileAddress").text(address);
     user = {signedIn: true, name: name, email: email, phone: phone, address: address};
     checkOnDuty();
-    socket.emit("signin");
     resetInputs();
   }
 
@@ -332,7 +328,6 @@ $(function() {
     toggleSignedIn(false);
     user = {signedIn: false};
     console.log("Signed out successfully");
-    socket.emit("signout");
     resetInputs();
   });
 
