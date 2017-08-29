@@ -25,6 +25,17 @@ $(function() {
   function resetInputs() {
     $("input, textarea").val("");
   }
+  $(document).on("keyup", function(event) {
+    if((event.which !== 37 && event.which !== 39) || !$(event.target).is("input, textarea")) {
+      var currentTab = 1;
+      $(".menuButton").each(function(index) {
+        $(this).is(".redbg, .greenbg, .bluebg") && (currentTab = index);
+      });
+      var mod = (n, m) => ((n % m) + m) %m; // for negative numbers
+      event.which === 37 && $(".menuButton:nth-child(" + (mod(currentTab-1,3)+1) + ")").click();
+      event.which === 39 && $(".menuButton:nth-child(" + ((currentTab+1)%3+1) + ")").click();
+    }
+  });
 
   // tab details
   var currentTab = 1;
