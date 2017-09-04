@@ -180,6 +180,15 @@ body {
   flex-direction: column;
   justify-content: center;
 }
+#mission > p > span > .driverConfirm{
+  display: none;
+}
+#mission > p > span.confirm > .driverConfirm {
+  display: block;
+}
+#mission > p > span.confirm .driverInfo {
+  display: none;
+}
 #calendar {
   display: flex;
   flex-direction: column;

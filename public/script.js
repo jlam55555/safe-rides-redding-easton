@@ -100,36 +100,42 @@ $(function() {
   $("#requestButton").click(function() {
     var startLocation = $("#startLocation").val().trim();
     var situation = $("#situation").val();
-    $.post("/request", {startLocation: startLocation, situation: situation}, ()=>{}/*function(data) {
-      if(data.success === true) {
-        $(".driver1").text(data.driver1);
-        $(".driver2").text(data.driver2);
-        console.log(data.directionsUrl);
-        $("#mission").show();
-        $("#requesting").hide();
-        for(var i = 0; i < 6; i++) {
-          (function(i) {
-            socket.once("w" + i, function() {
-              $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-check");
-            });
-          })(i);
-        }
-      } else {
-        console.log(data.error);
-      }
-    }*/, "json");
+    $.post("/request", {startLocation: startLocation, situation: situation}, ()=>{}, "json");
   });
   socket.on("noMissionData", function() {
     $("#mission").hide();
     $("#requesting").show();
   });
   socket.on("missionData", function(data) {
+    console.log(data);
     $(".driver1").text(data.driver1);
     $(".driver2").text(data.driver2);
     $(".drivee").text(data.drivee);
     $("#requesting").hide();
     $("#mission").show();
-    console.log(data.waypoints);
+    var first = true;
+    var confirmId = false;
+    for(var i = 0; i < data.waypoints.length; i++) {
+      if(data.waypoints[i] === null) {
+        if(first) {
+          if(
+            (data.role === 0 && (i == 2 || i == 3))
+            || (data.role === 1 && (i == 0 || i == 5))
+            || (data.role === 2 && (i == 1 || i == 4))
+          ) {
+            confirmId = i+1;
+          }
+          first = false;
+        }
+      } else {
+        $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-check");
+      }
+    }
+    $("#mission > p > span").removeClass("confirm");
+    confirmId && $("#mission > p:nth-child(" + confirmId + ") > span").addClass("confirm");
+  });
+  $(".confirmButton").click(function() {
+    socket.emit("confirm", $(this).data("confirm"));
   });
 
   // check if on duty

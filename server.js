@@ -125,14 +125,14 @@ io.on("connection", function(socket) {
                       }
                       socket.emit("missionData", {
                         id: data.id,
-                        waypoints: {
-                          w0: data.w0,
-                          w1: data.w1,
-                          w2: data.w2,
-                          w3: data.w3,
-                          w4: data.w4,
-                          w5: data.w5
-                        },
+                        waypoints: [
+                          data.w0,
+                          data.w1,
+                          data.w2,
+                          data.w3,
+                          data.w4,
+                          data.w5
+                        ],
                         directionsUrl: data.directionsUrl,
                         driver1: driver1Name,
                         driver2: driver2Name,
@@ -148,6 +148,67 @@ io.on("connection", function(socket) {
       })
       .catch(e=>console.log(e));
   };
+  socket.on("confirm", function(waypoint) {
+    if(!socket.handshake.session.email) return;
+    db.one("SELECT mission FROM users WHERE email='" + socket.handshake.session.email + "'")
+      .then(function(data) {
+        if(data.mission === null) {
+          console.log("no mission");
+          return;
+        }
+        var mission = data.mission;
+        db.one("SELECT * FROM missions WHERE id=" + mission)
+          .then(function(data) {
+            var waypoints = [data.w0, data.w1, data.w2, data.w3, data.w4, data.w5];
+            var nextWaypoint = false;
+            for(var i = 0; i < waypoints.length; i++) {
+              if(waypoints[i] === null) {
+                nextWaypoint = i;
+                break;
+              }
+            }
+            if(nextWaypoint === false || nextWaypoint !== waypoint) {
+              console.log("mission completed or wrong waypoint");
+              return;
+            }
+            getUserId(socket.handshake.session.name, function(userId) {
+              if(
+                (userId === data.drivee && (waypoint == 2 || waypoint == 3))
+                || (userId === data.driver1 && (waypoint == 0 || waypoint == 5))
+                || (userId === data.driver2 && (waypoint == 1 || waypoint == 4))
+              ) {
+                db.none("UPDATE missions SET w" + waypoint + "=current_timestamp WHERE id=" + mission)
+                  .then(function() {
+                    var missionSockets = sockets.filter(function(socket) {
+                      return socket.handshake.session.uid === data.drivee
+                          || socket.handshake.session.uid === data.driver1
+                          || socket.handshake.session.uid === data.driver2;
+                    });
+                    if(waypoint === 5) {
+                      db.none("UPDATE users SET mission=null WHERE id=" + data.drivee + " OR id=" + data.driver1 + " OR id=" + data.driver2)
+                        .then(function() {
+                          for(var socket of missionSockets) {
+                            socket.sendMissionData();
+                          }
+                        })
+                        .catch(e=>console.log(e));
+                    } else {
+                      for(var socket of missionSockets) {
+                        socket.sendMissionData();
+                      }
+                    }
+                  })
+                  .catch(e=>console.log(e));
+              } else {
+                console.log("you are not the right role to confirm this");
+                return;
+              }
+            });
+          })
+          .catch(e=>console.log(e));
+      })
+      .catch(e=>console.log(e));
+  });
   socket.reload = function() {
     socket.handshake.session.reload(function(err) {
       err && console.log("error: " + err);
@@ -446,12 +507,13 @@ app.post("/signup", function(req, res) {
     if(hasStreetAddress) {
       address = data.json.results[0].formatted_address;
       // create account
-      db.none("INSERT INTO users (email, name, password, phone, address) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "', '" + address + "')")
-        .then(function() {
+      db.none("INSERT INTO users (email, name, password, phone, address) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "', '" + address + "') RETURNING id")
+        .then(function(data) {
           console.log(name + " signed up under email "  + email + ".");
           // sign in session
           req.session.email = email;
           req.session.name = name;
+          req.session.uid = data.id;
           res.json({success: true, address: address});
           var socket = sockets.filter(function(socket) {
             return socket.handshake.session.id === req.session.id;
@@ -475,11 +537,12 @@ app.post("/signin", function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
 
-  db.one("SELECT phone, name, address, mission, password FROM users WHERE email='" + email + "'")
+  db.one("SELECT id, phone, name, address, mission, password FROM users WHERE email='" + email + "'")
     .then(function(data) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
         req.session.name = data.name;
+        req.session.uid = data.id;
         var socket = sockets.filter(function(socket) {
           return socket.handshake.session.id === req.session.id;
         })[0];
