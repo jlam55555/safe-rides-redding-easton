@@ -107,6 +107,7 @@ var sockets = [];
 io.on("connection", function(socket) {
   sockets.push(socket);
   socket.sendMissionData = function() {
+    if(!socket.handshake.session.email) return socket.emit("noMissionData");
     db.one("SELECT mission FROM users WHERE email='" + socket.handshake.session.email + "'")
       .then(function(data) {
         if(data.mission === null) {
@@ -210,8 +211,8 @@ io.on("connection", function(socket) {
       .catch(e=>console.log(e));
   });
   socket.reload = function() {
-    socket.handshake.session.reload(function(err) {
-      err && console.log("error: " + err);
+    socket.handshake.session.reload(function(e) {
+      e && console.log("socket session reload error: " + e);
       socket.sendMissionData();
     });
   };
@@ -222,16 +223,15 @@ io.on("connection", function(socket) {
 
 // post requests
 app.post("/getUserDetails", function(req, res) {
-  var ssn = req.session;
-  if(ssn.email !== undefined) {
+  if(req.session.email !== undefined) {
     var socket = sockets.filter(function(socket) {
       return socket.handshake.session.email === req.session.email;
     })[0]
     socket.sendMissionData();
-    db.one("SELECT name, phone, address FROM users WHERE email='" + ssn.email + "'")
+    db.one("SELECT name, phone, address FROM users WHERE email='" + req.session.email + "'")
       .then(function(data) {
         res.json({
-          email: ssn.email,
+          email: req.session.email,
           phone: data.phone,
           name: data.name,
           address: data.address
@@ -507,7 +507,7 @@ app.post("/signup", function(req, res) {
     if(hasStreetAddress) {
       address = data.json.results[0].formatted_address;
       // create account
-      db.none("INSERT INTO users (email, name, password, phone, address) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "', '" + address + "') RETURNING id")
+      db.one("INSERT INTO users (email, name, password, phone, address) VALUES ('" + email.toLowerCase() + "', '" + name + "','" + passwordHash.generate(password) + "', '" + phone + "', '" + address + "') RETURNING id")
         .then(function(data) {
           console.log(name + " signed up under email "  + email + ".");
           // sign in session
@@ -523,7 +523,7 @@ app.post("/signup", function(req, res) {
             socket.reload();
           });
         })
-        .catch(function(err) {
+        .catch(function(e) {
           // error code 6: email taken
           res.json({success: false, error: 6});
         });
@@ -537,8 +537,12 @@ app.post("/signin", function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
 
-  db.one("SELECT id, phone, name, address, mission, password FROM users WHERE email='" + email + "'")
+  db.oneOrNone("SELECT id, phone, name, address, mission, password FROM users WHERE email='" + email + "'")
     .then(function(data) {
+      if(data === null) {
+        res.json({success: false, error: 1});
+        return;
+      }
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
         req.session.name = data.name;
@@ -566,8 +570,11 @@ app.post("/signout", function(req, res) {
   var socket = sockets.filter(function(socket) {
     return socket.handshake.session.email === req.session.email;
   })[0];
-  req.session.regenerate(function(err) {
-    err && console.log(err);
+  req.session.email = undefined;
+  req.session.name = undefined;
+  req.session.uid = undefined;
+  req.session.save(function(e) {
+    e && console.log("sign out error: " + e);
     socket.reload();
   });
 });

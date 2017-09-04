@@ -300,7 +300,6 @@ $(function() {
               error = "Volunteer times invalid.";
               break;
           }
-          console.log(error);
           addRemoveHandlerRunning = false;
           addRemoveHandler();
           checkOnDuty();
@@ -343,17 +342,13 @@ $(function() {
     $.post("/signout");
     toggleSignedIn(false);
     user = {signedIn: false};
-    console.log("Signed out successfully");
     resetInputs();
   });
 
   // check if signed in or not
   $.post("/getUserDetails", function(data) {
     if(data.email !== false) {
-      console.log("Signed in");
       signIn(data.email, data.name, data.phone, data.address);
-    } else {
-      console.log("Signed out");
     }
   }, "json");
 
@@ -422,11 +417,9 @@ $(function() {
             error = "Password does not match.";
             break;
         }
-        console.log("Sign in error: " + error);
         $("#signinError").text("Error: " + error);
       } else {
         signIn(email, data.name, data.phone, data.address);
-        console.log("Signed in success");
       }
     }, "json");
   });
