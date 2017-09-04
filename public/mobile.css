@@ -215,13 +215,36 @@ body {
   flex-shrink: 1;
   vertical-align: baseline;
 }
+#calendarDays {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: center;
+}
 .calendarDay {
+  height: 2em;
+  flex-basis: calc(100% / 7);
+  border-left: 1px solid #ecf0f1;
+  border-top: 1px solid #ecf0f1;
+  padding: 0.25em;
+}
+.calendarDay:nth-last-child(1), .calendarDay:nth-last-child(2), .calendarDay:nth-last-child(3), .calendarDay:nth-last-child(4), .calendarDay:nth-last-child(5), .calendarDay:nth-last-child(6), .calendarDay:nth-last-child(7) {
+  border-bottom: 1px solid #ecf0f1;
+}
+.calendarDay.noDate {
+  background-color: #ecf0f1;
+}
+.calendarDay.monthName {
+  flex-basis: 100%;
+}
+/*.calendarDay {
   line-height: 1;
   cursor: pointer;
-}
-.calendarDay:hover {
+}*/
+/*.calendarDay:hover {
   background-color: lightgrey;
-}
+}*/
 .volunteer {
   position: absolute;
   float: left;

@@ -81,6 +81,8 @@ $(function() {
   var match;
   if((match = window.location.href.match(/\?tab\=([123])$/)) !== null) {
     $(".menuButton:nth-of-type(" + match[1] + ")").click();
+    if(match[1] === "3")
+      setTimeout(unsetCalendar, 500); // fix this
   } else {
     $(".menuButton").first().click();
   }
@@ -159,10 +161,27 @@ $(function() {
   // calendar details
   var calendar;
   var dateIterator = new Date();
+  var shortDateFormat = new Intl.DateTimeFormat("en-us", {day: "2-digit"});
+  var monthDateFormat = new Intl.DateTimeFormat("en-us", {month: "long"});
+  $("#calendarDays").append($("<div/>").addClass("calendarDay monthName").text(monthDateFormat.format(dateIterator)));
+  for(var i = 0; i < dateIterator.getDay(); i++) {
+    $("#calendarDays").append(
+      $("<div/>").addClass("calendarDay noDate")
+    );
+  }
   for(var i = 0; i < 30; i++) {
+    if(dateIterator.getDate() === 1 && dateIterator.getMonth() !== new Date().getMonth()) {
+      for(var i = 0; i < 7-dateIterator.getDay(); i++) {
+        $("#calendarDays").append( $("<div/>").addClass("calendarDay noDate"));
+      }
+      $("#calendarDays").append($("<div/>").addClass("calendarDay monthName").text(monthDateFormat.format(dateIterator)));
+      for(var i = 0; i < dateIterator.getDay(); i++) {
+        $("#calendarDays").append( $("<div/>").addClass("calendarDay noDate"));
+      }
+    }
     $("#calendarDays").append(
       $("<div/>")
-        .text(dateFormat.format(dateIterator))
+        .text(shortDateFormat.format(dateIterator))
         .addClass("calendarDay")
     );
     dateIterator = new Date(dateIterator.valueOf() + 86400000);
@@ -246,7 +265,7 @@ $(function() {
     isCalendar = false;
   }
   $("#unsetCalendar").click(unsetCalendar);
-  $(".calendarDay").click(function() {
+  $(".calendarDay:not(.noDate):not(.monthName)").click(function() {
     setCalendar($(this).text());
   });
   function addRemoveHandler() {
