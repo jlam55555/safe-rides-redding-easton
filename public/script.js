@@ -64,8 +64,6 @@ $(function() {
         $("#header").addClass("greenbg");
         $("#requestContainer").outerHeight($("#content").height());
         $(".menuButton:nth-of-type(2)").addClass("greenbg");
-        $("#requesting").show();
-        $("#mission").hide();
         history.pushState({}, null, "/?tab=2");
         break;
       case 3:
@@ -102,7 +100,7 @@ $(function() {
   $("#requestButton").click(function() {
     var startLocation = $("#startLocation").val().trim();
     var situation = $("#situation").val();
-    $.post("/request", {startLocation: startLocation, situation: situation}, function(data) {
+    $.post("/request", {startLocation: startLocation, situation: situation}, ()=>{}/*function(data) {
       if(data.success === true) {
         $(".driver1").text(data.driver1);
         $(".driver2").text(data.driver2);
@@ -119,7 +117,19 @@ $(function() {
       } else {
         console.log(data.error);
       }
-    }, "json");
+    }*/, "json");
+  });
+  socket.on("noMissionData", function() {
+    $("#mission").hide();
+    $("#requesting").show();
+  });
+  socket.on("missionData", function(data) {
+    $(".driver1").text(data.driver1);
+    $(".driver2").text(data.driver2);
+    $(".drivee").text(data.drivee);
+    $("#requesting").hide();
+    $("#mission").show();
+    console.log(data.waypoints);
   });
 
   // check if on duty

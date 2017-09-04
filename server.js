@@ -36,16 +36,17 @@ Database table missions structure:
 | w5        | timestamp with time zone |
 | situation | varchar(500)             |
 | comments  | varchar(500)             |
-| requester | integer                  |
-| rescuer1  | integer                  |
-| rescuer2  | integer                  |
+| url       | varchar(500)             |
+| drivee    | integer                  |
+| driver1   | integer                  |
+| driver2   | integer                  |
 +-----------+--------------------------+
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 /* reset database (for development purposes only)
 CREATE TABLE users (id SERIAL, email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL unique, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL unique, address VARCHAR(100) NOT NULL unique, mission INTEGER);
 DROP TABLE calendar;CREATE TABLE calendar (json TEXT);INSERT INTO calendar (json) VALUES ('{}');
-CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, w4 timestamp with time zone, w5 timestamp with time zone, situation varchar(500), requester integer not null, rescuer1 integer not null, rescuer2 integer not null, comments varchar(500));
+CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, w4 timestamp with time zone, w5 timestamp with time zone, situation varchar(500), url varchar(500) NOT NULL, drivee integer not null, driver1 integer not null, driver2 integer not null, comments varchar(500));
 */
 
 // twilio for sending text messages
@@ -83,6 +84,21 @@ var appSession = session({
 app.use(appSession);
 var fs = require("fs");
 
+// convenience functions
+function getUserId(name, fn) {
+  db.one("SELECT id FROM users WHERE name='" + name + "'")
+    .then(data => fn.call(null, data.id))
+    .catch(e => console.log("get id error: " + e));
+}
+function getUserName(id, fn) {
+  db.one("SELECT name FROM users WHERE id=" + id)
+    .then(data => fn.call(null, data.name))
+    .catch(e => console.log("get name error: " + e));
+}
+function dbSafeString(string) {
+  return string.replace(/\'/g, "&apos;");
+}
+
 // socket.io
 var io = require("socket.io")(http);
 var sharedsession = require("express-socket.io-session");
@@ -90,20 +106,52 @@ io.use(sharedsession(appSession), { autoSave: true });
 var sockets = [];
 io.on("connection", function(socket) {
   sockets.push(socket);
-  socket.init = function() {
-    // check for mission
-    // mission should be set in data
-    // WORKING HERE
-    //if(mission)
-    //  socket.emit("missionData")
-    //else
-    //  socket.emit("nomissiondata")
+  socket.sendMissionData = function() {
+    db.one("SELECT mission FROM users WHERE email='" + socket.handshake.session.email + "'")
+      .then(function(data) {
+        if(data.mission === null) {
+          socket.emit("noMissionData");
+        } else {
+          db.one("SELECT * FROM missions WHERE id=" + data.mission) 
+            .then(function(data) {
+              getUserName(data.driver1, function(driver1Name) {
+                getUserName(data.driver2, function(driver2Name) {
+                  getUserName(data.drivee, function(driveeName) {
+                      var role = 0; // default role drivee
+                      if(socket.handshake.session.name === driver1Name) {
+                        role = 1;
+                      } else if(socket.handshake.session.name === driver2Name) {
+                        role = 2;
+                      }
+                      socket.emit("missionData", {
+                        id: data.id,
+                        waypoints: {
+                          w0: data.w0,
+                          w1: data.w1,
+                          w2: data.w2,
+                          w3: data.w3,
+                          w4: data.w4,
+                          w5: data.w5
+                        },
+                        directionsUrl: data.directionsUrl,
+                        driver1: driver1Name,
+                        driver2: driver2Name,
+                        drivee: driveeName,
+                        role: role
+                      });
+                    });
+                  });
+                });
+              })
+              .catch(e=>console.log("sendMissionData error: " + e));
+        }
+      })
+      .catch(e=>console.log(e));
   };
-  socket.init();
   socket.reload = function() {
     socket.handshake.session.reload(function(err) {
       err && console.log("error: " + err);
-      socket.init();
+      socket.sendMissionData();
     });
   };
   socket.on("disconnect", function() {
@@ -115,11 +163,12 @@ io.on("connection", function(socket) {
 app.post("/getUserDetails", function(req, res) {
   var ssn = req.session;
   if(ssn.email !== undefined) {
+    var socket = sockets.filter(function(socket) {
+      return socket.handshake.session.email === req.session.email;
+    })[0]
+    socket.sendMissionData();
     db.one("SELECT name, phone, address FROM users WHERE email='" + ssn.email + "'")
       .then(function(data) {
-
-        // CHECK FOR MISSION STATUS
-
         res.json({
           email: ssn.email,
           phone: data.phone,
@@ -315,7 +364,7 @@ app.post("/request", function(req, res) {
             finish,
             volunteerAddresses[shortest.firstAddress]
           ];
-          var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|");
+          var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|") + "|" + stops[1];
           var driver1Name = dbData.filter(function(volunteer) {
             return volunteer.address === volunteerAddresses[shortest.firstAddress];
           })[0].name;
@@ -324,41 +373,28 @@ app.post("/request", function(req, res) {
           })[0].name;
           var driveeName = req.session.name;
 
-          res.json({success: true, directionsUrl: directionsUrl, route: stops, driver1: driver1Name, driver2: driver2Name});
-          // setInterval for dev only
-          var x = -1;
-          var t = setInterval(function() {
-            if(x++ === 6) {
-              clearInterval(t);
-              return;
-            }
+          //res.json({success: true, directionsUrl: directionsUrl, route: stops, driver1: driver1Name, driver2: driver2Name});
+          res.json({success: true});
 
-            // for drivee
-            var driveeSocket = sockets.filter(function(socket) {
-              return socket.handshake.session.email === req.session.email;
+          getUserId(driver1Name, function(driver1Id) {
+            getUserId(driver2Name, function(driver2Id) {
+              getUserId(req.session.name, function(driveeId) {
+                // update user mission field
+                db.one("INSERT INTO missions (situation, url, driver1, driver2, drivee) VALUES ('" + dbSafeString(req.body.situation) + "', '" + dbSafeString(directionsUrl) + "', " + driver1Id + ", " + driver2Id + ", " + driveeId + ") RETURNING id")
+                  .then(function(data) {
+                    db.none("UPDATE users SET mission=" + data.id + " WHERE id=" + driver1Id + " OR id=" + driver2Id + " OR id=" + driveeId)
+                      .then(function() {
+                        var socket = sockets.filter(function(socket) {
+                          return socket.handshake.session.email === req.session.email;
+                        })[0];
+                        socket.sendMissionData();
+                      })
+                      .catch(e=>console.log(e));
+                  })
+                  .catch(e=>console.log(e));
+              });
             });
-            if(driveeSocket.length !== 0) {
-              driveeSocket[0].emit("w" + x);
-            }
-            
-            // for driver 1
-            var driver1Socket = sockets.filter(function(socket) {
-              console.log(socket.handshake.session.name, driver1Name);
-              return socket.handshake.session.name === driver1Name;
-            });
-            if(driver1Socket.length !== 0) {
-              driver1Socket[0].emit("w" + x);
-            }
-
-            // for driver 2
-            var driver2Socket = sockets.filter(function(socket) {
-              console.log(socket.handshake.session.name, driver2Name);
-              return socket.handshake.session.name === driver2Name;
-            });
-            if(driver2Socket.length !== 0) {
-              driver2Socket[0].emit("w" + x);
-            }
-          }, 1000);
+          });
         }
       });
     })
@@ -417,6 +453,13 @@ app.post("/signup", function(req, res) {
           req.session.email = email;
           req.session.name = name;
           res.json({success: true, address: address});
+          var socket = sockets.filter(function(socket) {
+            return socket.handshake.session.id === req.session.id;
+          })[0];
+          req.session.save(function(err) {
+            err && console.log(err);
+            socket.reload();
+          });
         })
         .catch(function(err) {
           // error code 6: email taken
@@ -432,7 +475,7 @@ app.post("/signin", function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
 
-  db.one("SELECT phone, name, address, password FROM users WHERE email='" + email + "'")
+  db.one("SELECT phone, name, address, mission, password FROM users WHERE email='" + email + "'")
     .then(function(data) {
       if(passwordHash.verify(password, data.password)) {
         req.session.email = email;
@@ -451,7 +494,7 @@ app.post("/signin", function(req, res) {
       }
     })
     .catch(function(err) {
-      console.log(err);
+      console.log("signin error: " + err);
       // error code 1: email not found
       res.json({success: false, error: 1})
     });
