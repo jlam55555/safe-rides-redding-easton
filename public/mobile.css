@@ -171,6 +171,9 @@ body {
 .fa-ellipsis-h {
   background-color: #e74c3c;
 }
+.fa-spinner {
+  background-color: #e67e22;
+}
 .fa-check {
   background-color: #2ecc71;
 }

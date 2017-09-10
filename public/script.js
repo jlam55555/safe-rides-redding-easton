@@ -108,6 +108,7 @@ $(function() {
     $("#mission").hide();
     $("#requesting").show();
   });
+  var timeFormat = new Intl.DateTimeFormat("en-US", {hour: "2-digit", minute: "2-digit", second: "2-digit"});
   socket.on("missionData", function(data) {
     console.log(data);
     $(".driver1").text(data.driver1);
@@ -128,9 +129,11 @@ $(function() {
             confirmId = i+1;
           }
           first = false;
+          $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-spinner fa-spin");
         }
       } else {
-        $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-check");
+        $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h fa-spinner fa-spin").addClass("fa-check");
+        $("#mission > p:nth-child(" + (i+1) + ") .timestamp").text(timeFormat.format(new Date(data.waypoints[i])));
       }
     }
     $("#mission > p > span").removeClass("confirm");
