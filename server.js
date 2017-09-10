@@ -77,9 +77,13 @@ var googleMapsClient = require("@google/maps").createClient({
 var passwordHash = require("password-hash");
 var session = require("express-session");
 var appSession = session({
-  secret:"blahblahsecretysecret",
+  secret: process.env.SESSION_SECRET,
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 30*24*60*60*1000,
+    secure: true
+  }
 });
 app.use(appSession);
 var fs = require("fs");
