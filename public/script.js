@@ -183,6 +183,7 @@ $(function() {
       $("<div/>")
         .text(shortDateFormat.format(dateIterator))
         .addClass("calendarDay")
+        .data("date", dateFormat.format(dateIterator))
     );
     dateIterator = new Date(dateIterator.valueOf() + 86400000);
   }
@@ -194,6 +195,7 @@ $(function() {
     $("#calendar").height($("#content").height());
     currentDate = date;
     $(".volunteer, .volunteerName").remove();
+    $("#unsetCalendar").text(date);
     $.post("./getCalendar", {}, function(data) {
       calendar = data;
       $("#calendarDays").hide();
@@ -224,7 +226,7 @@ $(function() {
               .addClass("volunteerName")
               .text((calendar[date][i].email === user.email ? "You" : calendar[date][i].name) + (calendar[date][i].start === -1 ? " (empty)" : ""))
               .css({
-                left: (userCounter+(userCounter === 0 ? 3 : 7))*blockSize
+                left: userCounter === 0 ? 3*blockSize : 7.5*blockSize+userCounter*blockSize*1.5+0.5
               })
           );
         }
@@ -235,7 +237,7 @@ $(function() {
               width: blockSize * (userCounter === 0 ? 5 : 1),
               height: calendar[date][i].start !== -1 ? (calendar[date][i].end-calendar[date][i].start+1)*blockSize : 0,
               top: calendar[date][i].start !== -1 ? $(".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop : 0,
-              left: (userCounter+(userCounter === 0 ? 3 : 7))*blockSize
+              left: userCounter === 0 ? 3*blockSize : 7.5*blockSize+userCounter*blockSize*1.5+0.5
             })
             .data("name", calendar[date][i].name)
             .data("start", calendar[date][i].start)
@@ -266,7 +268,7 @@ $(function() {
   }
   $("#unsetCalendar").click(unsetCalendar);
   $(".calendarDay:not(.noDate):not(.monthName)").click(function() {
-    setCalendar($(this).text());
+    setCalendar($(this).data("date"));
   });
   function addRemoveHandler() {
     if(!isCalendar || addRemoveHandlerRunning) return;

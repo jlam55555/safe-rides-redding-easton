@@ -202,6 +202,15 @@ body {
   background-color: #2980b9;
   color: #ecf0f1;
   border: none;
+  transition: none;
+}
+#unsetCalendar::before {
+  font-family: "fontawesome";
+  content: "\f137";
+  padding-right: 0.5em;
+}
+#unsetCalendar:hover, #unsetCalendar:active {
+  background-color: #3498db;
 }
 #calendarVolunteers {
   flex-basis: 0;
@@ -229,6 +238,9 @@ body {
   border-top: 1px solid #ecf0f1;
   padding: 0.25em;
 }
+.calendarDay:not(.noDate):not(.monthName):active, .calendarDay:not(.noDate):not(.monthName):hover {
+  background-color: #bdc3c7;
+}
 .calendarDay:nth-last-child(1), .calendarDay:nth-last-child(2), .calendarDay:nth-last-child(3), .calendarDay:nth-last-child(4), .calendarDay:nth-last-child(5), .calendarDay:nth-last-child(6), .calendarDay:nth-last-child(7) {
   border-bottom: 1px solid #ecf0f1;
 }
@@ -238,34 +250,31 @@ body {
 .calendarDay.monthName {
   flex-basis: 100%;
 }
-/*.calendarDay {
-  line-height: 1;
-  cursor: pointer;
-}*/
-/*.calendarDay:hover {
-  background-color: lightgrey;
-}*/
 .volunteer {
   position: absolute;
   float: left;
   overflow-wrap: break-word;
   line-height: 1;
   height: 1em;
+  box-shadow: 0.25em 0.25em 0 0 black;
+  z-index: 1;
 }
-.volunteer.color0 { background-color: rgba(231, 76, 60, 0.3); }
-.volunteer.color1 { background-color: rgba(230, 126, 34, 0.3); }
-.volunteer.color2 { background-color: rgba(241, 196, 15, 0.3); }
-.volunteer.color3 { background-color: rgba(46, 204, 113, 0.3); }
-.volunteer.color4 { background-color: rgba(52, 152, 219, 0.3); }
-.volunteer.color5 { background-color: rgba(155, 89, 182, 0.3); }
-.volunteer:hover {
-  background-color: grey;
+.volunteer.color0 { background-color: rgba(231, 76, 60, 0.9); }
+.volunteer.color1 { background-color: rgba(230, 126, 34, 0.9); }
+.volunteer.color2 { background-color: rgba(241, 196, 15, 0.9); }
+.volunteer.color3 { background-color: rgba(46, 204, 113, 0.9); }
+.volunteer.color4 { background-color: rgba(52, 152, 219, 0.9); }
+.volunteer.color5 { background-color: rgba(155, 89, 182, 0.9); }
+.volunteer:hover, .volunteer:active {
+  opacity: 0.5;
 }
 .volunteerName {
   position: absolute;
   width: 100%;
   transform-origin: 0% 0%;
   transform: rotate(90deg) translateY(-1em);
+  z-index: 2;
+  font-weight: bold;
 }
 .volunteerInfo {
   color: white;
