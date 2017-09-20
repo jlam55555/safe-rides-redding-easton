@@ -310,6 +310,13 @@ $(function() {
           endIndex = index;
         }
       });
+      // allow backwards dragging later too
+      if(startIndex === undefined) {
+        startIndex = 0; // make this more dynamic later
+      }
+      if(endIndex === undefined) {
+        endIndex = 23; // make this more dynamic later; this accounts for people dragging off of the screen
+      }
       selectionElement.remove();
       $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
       var eventType = prompt("Add or remove time?");
