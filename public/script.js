@@ -174,11 +174,11 @@ $(function() {
   }
   for(var i = 0; i < 30; i++) {
     if(dateIterator.getDate() === 1 && dateIterator.getMonth() !== new Date().getMonth()) {
-      for(var i = 0; i < 7-dateIterator.getDay(); i++) {
+      for(var j = 0; j < 7-dateIterator.getDay(); j++) {
         $("#calendarDays").append( $("<div/>").addClass("calendarDay noDate"));
       }
       $("#calendarDays").append($("<div/>").addClass("calendarDay monthName").text(monthDateFormat.format(dateIterator)));
-      for(var i = 0; i < dateIterator.getDay(); i++) {
+      for(var j = 0; j < dateIterator.getDay(); j++) {
         $("#calendarDays").append( $("<div/>").addClass("calendarDay noDate"));
       }
     }
