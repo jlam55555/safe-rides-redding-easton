@@ -246,7 +246,7 @@ $(function() {
               .addClass("volunteerName")
               .text((calendar[date][i].email === user.email ? "You" : calendar[date][i].name) + (calendar[date][i].start === -1 ? " (empty)" : ""))
               .css({
-                left: userCounter === 0 ? 3*blockSize : 7.5*blockSize+userCounter*blockSize*1.5+0.5
+                left: userCounter === 0 ? 8.25*blockSize : 6.75*blockSize+(userCounter+1)*blockSize*2
               })
           );
         }
@@ -257,7 +257,7 @@ $(function() {
               width: blockSize * (userCounter === 0 ? 5 : 1),
               height: calendar[date][i].start !== -1 ? (calendar[date][i].end-calendar[date][i].start+1)*blockSize : 0,
               top: calendar[date][i].start !== -1 ? $(".volunteerStripes:nth-of-type(" + (parseInt(calendar[date][i].start)+1) + ")")[0].offsetTop : 0,
-              left: userCounter === 0 ? 3*blockSize : 7.5*blockSize+userCounter*blockSize*1.5+0.5
+              left: userCounter === 0 ? 3*blockSize : 7.5*blockSize+userCounter*blockSize*2
             })
             .data("name", calendar[date][i].name)
             .data("start", calendar[date][i].start)
@@ -269,6 +269,7 @@ $(function() {
   };
   function volunteerInfo(element, pageX, pageY) {
     $(".volunteerInfo").remove();
+    if(element === null) return;
     $("#calendarVolunteers").append(
       $("<div/>")
         .html("<strong>" + element.data("name") + "</strong><br>" + ("0"+element.data("start")).slice(-2) + ":00-" + ("0"+element.data("end")).slice(-2) + ":59")
@@ -337,6 +338,8 @@ $(function() {
         addRemoveHandlerRunning = false;
         addRemoveHandler();
         return;
+      } else {
+        volunteerInfo(null);
       }
       var endY = startY + parseInt(selectionElement.css("height"));
       var startIndex, endIndex;
