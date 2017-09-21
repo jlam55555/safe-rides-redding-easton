@@ -268,6 +268,7 @@ $(function() {
     }, "json");
   };
   $(document).on("mouseenter", ".volunteer", function(event) {
+    console.log($(this), $(this).data("name"));
     $("#calendarVolunteers").append(
       $("<div/>")
         .html("<strong>" + $(this).data("name") + "</strong><br>" + ("0"+$(this).data("start")).slice(-2) + ":00-" + ("0"+$(this).data("end")).slice(-2) + ":59")
@@ -295,14 +296,21 @@ $(function() {
     addRemoveHandlerRunning = true;
     var startX;
     var startY;
-    var selectionElement = $("<div/>").attr("id", "selectionElement");
+    var selectionElement = $("<div/>")
+      .attr("id", "selectionElement")
+      .addClass("volunteer color0")
+      .css({
+        width: 5*blockSize,
+        left: 3*blockSize,
+        height: 0
+      });
     $("#calendarVolunteers").append(selectionElement);
+    var lastY;
     function addTimeMousedownHandler(event) {
-      startX = blockSize;
       startY = (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop;
+      lastY = startY;
       selectionElement.css({
         top: startY,
-        left: startX,
         height: blockSize
       });
       $(document).on("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
@@ -314,9 +322,19 @@ $(function() {
         left: startX,
         height: Math.max(blockSize, (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop - startY)
       });
+      lastY = (event.pageY || event.originalEvent.touches[0].pageY);
       event.preventDefault();
     }
     function addTimeMouseupHandler(event) {
+      if(startY === lastY && $(event.target).is(".volunteer")) {
+        //console.log($(event.target).data("start"))
+        selectionElement.remove();
+        $(event.target).mouseenter();
+        $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
+        addRemoveHandlerRunning = false;
+        addRemoveHandler();
+        return;
+      }
       var endY = startY + parseInt(selectionElement.css("height"));
       var startIndex, endIndex;
       $(".volunteerStripes").each(function(index, elem) {
