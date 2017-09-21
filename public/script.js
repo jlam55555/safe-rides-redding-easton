@@ -7,10 +7,27 @@ $(function() {
     $("#header").addClass("webApp");
   }
 
-  // scrolling details
-  $("body").on("touchmove", function(event) {
-    event.preventDefault();
-  });
+  // modal script
+  var Modal = function(text, options) {
+    var elem = $("<div/>")
+      .addClass("modal")
+      .text(text);
+    var buttons = $("<div/>")
+      .addClass("modalButtons");
+    for(var option of options) {
+      (function(option) {
+        buttons.append($("<button/>")
+          .text(option.option)
+          .addClass("modalButton")
+          .click(function() {
+            option.handler();
+            elem.remove();
+          }));
+        })(option);
+    }
+    elem.append(buttons);
+    $("body").append(elem);
+  };
 
   // socket.io
   var socket = io();
@@ -319,7 +336,36 @@ $(function() {
       }
       selectionElement.remove();
       $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
-      var eventType = prompt("Add or remove time?");
+      function addRemoveTime(eventType) {
+        $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
+          if(!data.success) {
+            var error;
+            switch(data.error) {
+              case 1:
+                error = "Sign in to add volunteer times.";
+                break;
+              case 2:
+                error = "Volunteer times invalid.";
+                break;
+            }
+            addRemoveHandlerRunning = false;
+            addRemoveHandler();
+            checkOnDuty();
+          } else {
+            addRemoveHandlerRunning = false;
+            setCalendar(currentDate);
+          }
+        }, "json");
+      }
+      new Modal("Add or remove selected hours for volunteering?", [
+        {option: "Add", handler: addRemoveTime.bind(null, "add")},
+        {option: "Remove", handler: addRemoveTime.bind(null, "remove")},
+        {option: "Cancel", handler: ()=>{
+          addRemoveHandlerRunning = false;
+          addRemoveHandler();
+        }}
+      ]);
+      /*var eventType = prompt("Add or remove time?");
       $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
         if(!data.success) {
           var error;
@@ -338,7 +384,7 @@ $(function() {
           addRemoveHandlerRunning = false;
           setCalendar(currentDate);
         }
-      }, "json");
+      }, "json");*/
     }
     $(document).one("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
   }
