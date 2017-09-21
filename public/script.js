@@ -267,18 +267,18 @@ $(function() {
       addRemoveHandler();
     }, "json");
   };
-  $(document).on("mouseenter", ".volunteer", function(event) {
-    console.log($(this), $(this).data("name"));
+  function volunteerInfo(element, pageX, pageY) {
+    $(".volunteerInfo").remove();
     $("#calendarVolunteers").append(
       $("<div/>")
-        .html("<strong>" + $(this).data("name") + "</strong><br>" + ("0"+$(this).data("start")).slice(-2) + ":00-" + ("0"+$(this).data("end")).slice(-2) + ":59")
+        .html("<strong>" + element.data("name") + "</strong><br>" + ("0"+element.data("start")).slice(-2) + ":00-" + ("0"+element.data("end")).slice(-2) + ":59")
         .addClass("volunteerInfo")
         .css({
-          top: event.pageY - $("#calendarVolunteers")[0].offsetTop + $("#content").scrollTop(),
-          left: event.pageX - $("#calendarVolunteers")[0].offsetLeft + parseInt($(this).css("font-size"))
+          top: pageY - $("#calendarVolunteers")[0].offsetTop + $("#content").scrollTop(),
+          left: pageX - $("#calendarVolunteers")[0].offsetLeft + parseInt(element.css("font-size"))
         })
     );
-  });
+  }
   $(document).on("mouseleave", ".volunteer", function() {
     $(".volunteerInfo").remove();
   });
@@ -306,7 +306,10 @@ $(function() {
       });
     $("#calendarVolunteers").append(selectionElement);
     var lastY;
+    var targetElement;
     function addTimeMousedownHandler(event) {
+      $(document).off("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
+      targetElement = event.target;
       startY = (event.pageY || event.originalEvent.touches[0].pageY) - $("#calendarVolunteers")[0].offsetTop;
       lastY = startY;
       selectionElement.css({
@@ -326,10 +329,10 @@ $(function() {
       event.preventDefault();
     }
     function addTimeMouseupHandler(event) {
-      if(startY === lastY && $(event.target).is(".volunteer")) {
-        //console.log($(event.target).data("start"))
+      $(document).off("mouseup touchcancel touchend", "#calendarVolunteers, #calendarHours", addTimeMouseupHandler);
+      if(startY === lastY && $(targetElement).is(".volunteer:not(#selectionElement)")) {
         selectionElement.remove();
-        $(event.target).mouseenter();
+        volunteerInfo($(targetElement), event.pageX, event.pageY);
         $(document).off("mousemove touchmove", "#calendarVolunteers, #calendarHours", addTimeMousemoveHandler);
         addRemoveHandlerRunning = false;
         addRemoveHandler();
@@ -383,26 +386,6 @@ $(function() {
           addRemoveHandler();
         }}
       ]);
-      /*var eventType = prompt("Add or remove time?");
-      $.post((eventType === "add") ? "/addTime" : "/removeTime", {start: startIndex, end: endIndex, date: currentDate}, function(data) {
-        if(!data.success) {
-          var error;
-          switch(data.error) {
-            case 1:
-              error = "Sign in to add volunteer times.";
-              break;
-            case 2:
-              error = "Volunteer times invalid.";
-              break;
-          }
-          addRemoveHandlerRunning = false;
-          addRemoveHandler();
-          checkOnDuty();
-        } else {
-          addRemoveHandlerRunning = false;
-          setCalendar(currentDate);
-        }
-      }, "json");*/
     }
     $(document).one("mousedown touchstart", "#calendarVolunteers, #calendarHours", addTimeMousedownHandler);
   }

@@ -302,7 +302,6 @@ app.post("/addTime", function(req, res) {
   var date = req.body.date;
   var start = parseInt(req.body.start);
   var end = parseInt(req.body.end);
-  console.log("TESTING INPUT: " + start + " " + end);
   // error code 2: invalid data
   if(start > end || start < 0 || end > 23) {
     res.json({success: false, error: 2});
@@ -323,7 +322,6 @@ app.post("/addTime", function(req, res) {
     }
   }
   calendar[date].push({name: req.session.name, email: req.session.email, start: start, end: end});
-  console.log("TESTING CALENDAR: " + calendar[date]);
   db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'")
     .catch(function(err) {
       console.log(err);
@@ -340,7 +338,6 @@ app.post("/removeTime", function(req, res) {
   var date = req.body.date;
   var start = parseInt(req.body.start);
   var end = parseInt(req.body.end);
-  console.log("TESTING INPUT: " + start + " " + end);
   // error code 2: invalid data
   if(start > end || start < 0 || end > 23) {
     res.json({success: false, error: 2});
@@ -369,7 +366,6 @@ app.post("/removeTime", function(req, res) {
       }
     }
   }
-  console.log("TESTING CALENDAR: " + calendar[date]);
   db.none("UPDATE calendar SET json='" + JSON.stringify(calendar) + "'")
     .catch(function(err) {
       console.log(err);
