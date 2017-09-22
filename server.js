@@ -32,8 +32,6 @@ Database table missions structure:
 | w1        | timestamp with time zone |
 | w2        | timestamp with time zone |
 | w3        | timestamp with time zone |
-| w4        | timestamp with time zone |
-| w5        | timestamp with time zone |
 | situation | varchar(500)             |
 | comments  | varchar(500)             |
 | url       | varchar(500)             |
@@ -46,7 +44,7 @@ promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 /* reset database (for development purposes only)
 CREATE TABLE users (id SERIAL, email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL unique, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL unique, address VARCHAR(100) NOT NULL unique, mission INTEGER);
 DROP TABLE calendar;CREATE TABLE calendar (json TEXT);INSERT INTO calendar (json) VALUES ('{}');
-CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, w4 timestamp with time zone, w5 timestamp with time zone, situation varchar(500), url varchar(500) NOT NULL, drivee integer not null, driver1 integer not null, driver2 integer not null, comments varchar(500));
+CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, situation varchar(500), url varchar(500) NOT NULL, drivee integer not null, driver1 integer not null, driver2 integer not null, comments varchar(500));
 */
 
 // twilio for sending text messages
@@ -134,11 +132,9 @@ io.on("connection", function(socket) {
                           data.w0,
                           data.w1,
                           data.w2,
-                          data.w3,
-                          data.w4,
-                          data.w5
+                          data.w3
                         ],
-                        directionsUrl: data.directionsUrl,
+                        directionsUrl: data.url,
                         driver1: driver1Name,
                         driver2: driver2Name,
                         drivee: driveeName,
@@ -164,7 +160,7 @@ io.on("connection", function(socket) {
         var mission = data.mission;
         db.one("SELECT * FROM missions WHERE id=" + mission)
           .then(function(data) {
-            var waypoints = [data.w0, data.w1, data.w2, data.w3, data.w4, data.w5];
+            var waypoints = [data.w0, data.w1, data.w2, data.w3];
             var nextWaypoint = false;
             for(var i = 0; i < waypoints.length; i++) {
               if(waypoints[i] === null) {
@@ -178,9 +174,8 @@ io.on("connection", function(socket) {
             }
             getUserId(socket.handshake.session.name, function(userId) {
               if(
-                (userId === data.drivee && (waypoint == 2 || waypoint == 3))
-                || (userId === data.driver1 && (waypoint == 0 || waypoint == 5))
-                || (userId === data.driver2 && (waypoint == 1 || waypoint == 4))
+                (userId === data.drivee && (waypoint == 1 || waypoint == 2))
+                || ((userId === data.driver1 || userId === data.driver2) && (waypoint == 0 || waypoint == 3))
               ) {
                 db.none("UPDATE missions SET w" + waypoint + "=current_timestamp WHERE id=" + mission)
                   .then(function() {
@@ -189,7 +184,7 @@ io.on("connection", function(socket) {
                           || socket.handshake.session.uid === data.driver1
                           || socket.handshake.session.uid === data.driver2;
                     });
-                    if(waypoint === 5) {
+                    if(waypoint === 3) {
                       db.none("UPDATE users SET mission=null WHERE id=" + data.drivee + " OR id=" + data.driver1 + " OR id=" + data.driver2)
                         .then(function() {
                           for(var socket of missionSockets) {
@@ -377,7 +372,13 @@ app.post("/request", function(req, res) {
   if(req.session.email === undefined) return;
   if(volunteers.length < 2) volunteers = volunteers.concat([{email: "chrisvass1@gmail.com", name: "Christopher Vassallo"},{email: "jlam55555@gmail.com", name: "Jonathan Lam"}]);
   var query = "SELECT name, email, address FROM users WHERE email='" + req.session.email + "'";
-  for(var volunteer of volunteers) {
+
+
+  // randomize and place restrictions / authorization
+  var pickedVolunteers = volunteers.slice(0, 2);
+
+
+  for(var volunteer of pickedVolunteers) {
     query += " OR email='" + volunteer.email + "'";
   }
   db.many(query)
@@ -391,6 +392,7 @@ app.post("/request", function(req, res) {
         }
         return false;
       })[0].address;
+      /*
       dbData.splice(finishIndex, 1);
       var volunteerAddresses = dbData.map(function(item) {
         return item.address;
@@ -422,20 +424,25 @@ app.post("/request", function(req, res) {
               }
             }
           }
+          */
           var stops = [
-            volunteerAddresses[shortest.firstAddress],
-            volunteerAddresses[shortest.secondAddress],
+            /*volunteerAddresses[shortest.firstAddress],
+            volunteerAddresses[shortest.secondAddress],*/
+            process.env.MEETING_LOCATION,
             start,
             finish,
-            volunteerAddresses[shortest.firstAddress]
+            process.env.MEETING_LOCATION
+            //volunteerAddresses[shortest.firstAddress]
           ];
-          var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[4] + "&waypoints=" + stops.slice(1,-1).join("|") + "|" + stops[1];
-          var driver1Name = dbData.filter(function(volunteer) {
-            return volunteer.address === volunteerAddresses[shortest.firstAddress];
+          var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[3] + "&waypoints=" + stops.slice(1,-1).join("|");
+          /*var driver1Name = dbData.filter(function(volunteer) {
+            return volunteer.address === [shortest.firstAddress];
           })[0].name;
           var driver2Name = dbData.filter(function(volunteer) {
             return volunteer.address === volunteerAddresses[shortest.secondAddress];
-          })[0].name;
+          })[0].name;*/
+          var driver1Name = pickedVolunteers[0].name;
+          var driver2Name = pickedVolunteers[1].name;
           var driveeName = req.session.name;
 
           //res.json({success: true, directionsUrl: directionsUrl, route: stops, driver1: driver1Name, driver2: driver2Name});
@@ -460,8 +467,9 @@ app.post("/request", function(req, res) {
               });
             });
           });
-        }
+        /* }
       });
+      */
     })
     .catch(function(err) {
       console.log(err);

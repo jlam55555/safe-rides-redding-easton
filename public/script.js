@@ -131,6 +131,7 @@ $(function() {
     $(".driver1").text(data.driver1);
     $(".driver2").text(data.driver2);
     $(".drivee").text(data.drivee);
+    $("#directionsUrl > a").attr("href", data.directionsUrl);
     $("#requesting").hide();
     $("#mission").show();
     var first = true;
@@ -139,9 +140,8 @@ $(function() {
       if(data.waypoints[i] === null) {
         if(first) {
           if(
-            (data.role === 0 && (i == 2 || i == 3))
-            || (data.role === 1 && (i == 0 || i == 5))
-            || (data.role === 2 && (i == 1 || i == 4))
+            (data.role === 0 && (i == 1 || i == 2))
+            || ((data.role === 1 || data.role === 2) && (i == 0 || i == 3))
           ) {
             confirmId = i+1;
           }
