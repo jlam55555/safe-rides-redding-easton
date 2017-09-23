@@ -26,25 +26,28 @@ Database table calendar structure:
 | json | text |
 +------+------+
 Database table missions structure:
-+-----------+--------------------------+
-| id        | serial                   |
-| w0        | timestamp with time zone |
-| w1        | timestamp with time zone |
-| w2        | timestamp with time zone |
-| w3        | timestamp with time zone |
-| situation | varchar(500)             |
-| comments  | varchar(500)             |
-| url       | varchar(500)             |
-| drivee    | integer                  |
-| driver1   | integer                  |
-| driver2   | integer                  |
-+-----------+--------------------------+
++--------------+--------------------------+
+| id           | serial                   |
+| w0           | timestamp with time zone |
+| w1           | timestamp with time zone |
+| w2           | timestamp with time zone |
+| w3           | timestamp with time zone |
+| startplace   | varchar(200)             |
+| endplace     | varchar(200)             |
+| meetingplace | varchar(200)             |
+| situation    | varchar(500)             |
+| comments     | varchar(500)             |
+| url          | varchar(500)             |
+| drivee       | integer                  |
+| driver1      | integer                  |
+| driver2      | integer                  |
++--------------+--------------------------+
 promise db.query|none|one|many|any|oneOrNone|manyOrNone(query)
 */
 /* reset database (for development purposes only)
 CREATE TABLE users (id SERIAL, email VARCHAR(254) PRIMARY KEY, name VARCHAR(50) NOT NULL unique, password VARCHAR(64) NOT NULL, phone VARCHAR(11) NOT NULL unique, address VARCHAR(100) NOT NULL unique, mission INTEGER);
 DROP TABLE calendar;CREATE TABLE calendar (json TEXT);INSERT INTO calendar (json) VALUES ('{}');
-CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, situation varchar(500), url varchar(500) NOT NULL, drivee integer not null, driver1 integer not null, driver2 integer not null, comments varchar(500));
+CREATE TABLE missions (id serial, w0 timestamp with time zone, w1 timestamp with time zone, w2 timestamp with time zone, w3 timestamp with time zone, startPlace varchar(200), endPlace varchar(200), meetingPlace varchar(200), situation varchar(500), url varchar(500) NOT NULL, drivee integer not null, driver1 integer not null, driver2 integer not null, comments varchar(500));
 */
 
 // twilio for sending text messages
@@ -138,7 +141,10 @@ io.on("connection", function(socket) {
                         driver1: driver1Name,
                         driver2: driver2Name,
                         drivee: driveeName,
-                        role: role
+                        role: role,
+                        start: data.startplace,
+                        end: data.endplace,
+                        meeting: data.meetingplace
                       });
                     });
                   });
@@ -452,7 +458,7 @@ app.post("/request", function(req, res) {
             getUserId(driver2Name, function(driver2Id) {
               getUserId(req.session.name, function(driveeId) {
                 // update user mission field
-                db.one("INSERT INTO missions (situation, url, driver1, driver2, drivee) VALUES ('" + dbSafeString(req.body.situation) + "', '" + dbSafeString(directionsUrl) + "', " + driver1Id + ", " + driver2Id + ", " + driveeId + ") RETURNING id")
+                db.one("INSERT INTO missions (situation, url, driver1, driver2, drivee, startplace, endplace, meetingplace) VALUES ('" + dbSafeString(req.body.situation) + "', '" + dbSafeString(directionsUrl) + "', " + driver1Id + ", " + driver2Id + ", " + driveeId + ", '" + start + "', '" + finish + "', '" + process.env.MEETING_LOCATION + "') RETURNING id")
                   .then(function(data) {
                     db.none("UPDATE users SET mission=" + data.id + " WHERE id=" + driver1Id + " OR id=" + driver2Id + " OR id=" + driveeId)
                       .then(function() {

@@ -1,5 +1,34 @@
+var map;
+var markers = [];
+var bounds;
+var createMarker = function(address) {
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode({address: address}, function(results, status) {
+    var marker = new google.maps.Marker({
+      position: results[0].geometry.location,
+      map: map,
+      title: address
+    });
+    markers.push(marker);
+    bounds.extend(marker.getPosition());
+    map.fitBounds(bounds);
+    map.setCenter(bounds.getCenter());
+    google.maps.event.trigger(map, "resize");
+  });
+}
+var createMarkers = function(addresses) {
+  markers = [];
+  bounds = new google.maps.LatLngBounds();
+  for(var address of addresses) {
+    createMarker(address);
+  }
+};
+var initMap = function() {
+  map = new google.maps.Map(document.getElementById("requestMap"), {
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+};
 $(function() {
-
   // make web app standalone (i.e., not open links in safari)
   // src: https://gist.github.com/irae/1042167 (condensed version)
   (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(chref=d.href).replace(e.href,"").indexOf("#")&&(!/^[a-z\+\.\-]+:/i.test(chref)||chref.indexOf(e.protocol+"//"+e.host)===0)&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
@@ -127,17 +156,23 @@ $(function() {
   });
   var timeFormat = new Intl.DateTimeFormat("en-US", {hour: "2-digit", minute: "2-digit", second: "2-digit"});
   socket.on("missionData", function(data) {
-    console.log(data);
-    $(".driver1").text(data.driver1);
-    $(".driver2").text(data.driver2);
-    $(".drivee").text(data.drivee);
-    $("#directionsUrl > a").attr("href", data.directionsUrl);
+    createMarkers([data.start, data.end, data.meeting]);
+    $(".driver1").text(data.driver1.replace(/ .*$/g, ""));
+    $(".driver2").text(data.driver2.replace(/ .*$/g, ""));
+    $(".drivee").text(data.drivee.replace(/ .*/g, ""));
+    $("#directionsUrl").attr("href", data.directionsUrl);
     $("#requesting").hide();
     $("#mission").show();
     var first = true;
     var confirmId = false;
+          $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h fa-check fa-spin fa-spinner").addClass("fa-ellipsis-h");
     for(var i = 0; i < data.waypoints.length; i++) {
       if(data.waypoints[i] === null) {
+        var waypointAddress;
+        if(i == 1) waypointAddress = data.start;
+        else if(i == 2) waypointAddress = data.end;
+        else waypointAddress = data.meeting;
+        $("#mission > p:nth-child(" + (i+1) + ") .timestamp").text(waypointAddress);
         if(first) {
           if(
             (data.role === 0 && (i == 1 || i == 2))

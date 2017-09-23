@@ -213,29 +213,23 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-size: 0.8em;
 }
 #mission > p > span > .driverConfirm{
   display: none;
 }
 #mission > p > span.confirm > .driverConfirm {
   display: block;
-  margin-right: 0.5em;
 }
 #mission > p > span.confirm .driverInfo {
   display: none;
 }
 .timestamp {
-  font-size: 0.8em;
+  font-size: 0.5em;
   color: #34495e;
 }
 #directionsUrl {
   padding: 0.5em;
   text-align: center;
-  width: 100%;
-  text-decoration: none;
-  font-weight: bold;
-  color: #34495e;
 }
 #requestMap {
   flex-grow: 1;

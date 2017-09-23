@@ -108,11 +108,12 @@
               <p>
                 <i class="fa fa-fw fa-ellipsis-h"></i>
                 <span>
-                  <span class="driverInfo"><span class="driver1"></span> and <span class="driver2"></span> have returned to the metting place.<br><span class="timestamp"></span></span>
+                  <span class="driverInfo"><span class="driver1"></span> and <span class="driver2"></span> have returned to the meeting place.<br><span class="timestamp"></span></span>
                   <span class="driverConfirm"><button class="confirmButton" data-confirm="3">Confirm that you have returned to the meeting place.</button></span>
                 </span>
               </p>
-              <p id="directionsUrl"><a>View directions on Google Maps <i class="fa fa-map-o"></i></a></p>
+              <a id="directionsUrl">Open in Google Maps <i class="fa fa-map-o"></i></a>
+              <div id="requestMap"></div>
             </div>
           </div>
         </div>
@@ -136,5 +137,7 @@
       <div data-tab-id="2" class="fa fa-ambulance menuButton"></div>
       <div data-tab-id="3" class="fa fa-calendar menuButton"></div>
     </div>
+    <!-- Google Maps -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb1594vVZ1GlBBHkqOTHBVKjYsZOKAas4&callback=initMap"></script>
   </body>
 </html>
