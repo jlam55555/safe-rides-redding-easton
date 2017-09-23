@@ -434,10 +434,10 @@ app.post("/request", function(req, res) {
           var stops = [
             /*volunteerAddresses[shortest.firstAddress],
             volunteerAddresses[shortest.secondAddress],*/
-            process.env.MEETING_LOCATION,
+            process.env.MEETING_PLACE,
             start,
             finish,
-            process.env.MEETING_LOCATION
+            process.env.MEETING_PLACE
             //volunteerAddresses[shortest.firstAddress]
           ];
           var directionsUrl = "https://www.google.com/maps/dir/?api=1&origin=" + stops[0] + "&destination=" + stops[3] + "&waypoints=" + stops.slice(1,-1).join("|");
