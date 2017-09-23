@@ -165,7 +165,7 @@ $(function() {
     $("#mission").show();
     var first = true;
     var confirmId = false;
-          $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h fa-check fa-spin fa-spinner").addClass("fa-ellipsis-h");
+    $("#mission > p > i").removeClass("fa-ellipsis-h fa-check fa-spin fa-spinner").addClass("fa-ellipsis-h");
     for(var i = 0; i < data.waypoints.length; i++) {
       if(data.waypoints[i] === null) {
         var waypointAddress;
