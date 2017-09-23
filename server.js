@@ -458,7 +458,7 @@ app.post("/request", function(req, res) {
             getUserId(driver2Name, function(driver2Id) {
               getUserId(req.session.name, function(driveeId) {
                 // update user mission field
-                db.one("INSERT INTO missions (situation, url, driver1, driver2, drivee, startplace, endplace, meetingplace) VALUES ('" + dbSafeString(req.body.situation) + "', '" + dbSafeString(directionsUrl) + "', " + driver1Id + ", " + driver2Id + ", " + driveeId + ", '" + start + "', '" + finish + "', '" + process.env.MEETING_LOCATION + "') RETURNING id")
+                db.one("INSERT INTO missions (situation, url, driver1, driver2, drivee, startplace, endplace, meetingplace) VALUES ('" + dbSafeString(req.body.situation) + "', '" + dbSafeString(directionsUrl) + "', " + driver1Id + ", " + driver2Id + ", " + driveeId + ", '" + start + "', '" + finish + "', '" + process.env.MEETING_PLACE + "') RETURNING id")
                   .then(function(data) {
                     db.none("UPDATE users SET mission=" + data.id + " WHERE id=" + driver1Id + " OR id=" + driver2Id + " OR id=" + driveeId)
                       .then(function() {
