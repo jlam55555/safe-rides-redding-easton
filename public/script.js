@@ -36,6 +36,10 @@ $(function() {
     $("#header").addClass("webApp");
   }
 
+  // detecting swipes
+  // src: http://www.javascriptkit.com/javatutors/touchevents2.shtml
+  function swipedetect(e,t){var n,a,u,c,i,o,d,h=e,s=t||function(e){};h.addEventListener("touchstart",function(e){var t=e.changedTouches[0];n="none",dist=0,a=t.pageX,u=t.pageY,d=(new Date).getTime(),e.preventDefault()},!1),h.addEventListener("touchmove",function(e){e.preventDefault()},!1),h.addEventListener("touchend",function(e){var t=e.changedTouches[0];c=t.pageX-a,i=t.pageY-u,(o=(new Date).getTime()-d)<=300&&(Math.abs(c)>=150&&Math.abs(i)<=100?n=c<0?"left":"right":Math.abs(i)>=150&&Math.abs(c)<=100&&(n=i<0?"up":"down")),s(n),e.preventDefault()},!1)}
+
   // modal script
   var Modal = function(text, options) {
     var elem = $("<div/>")
@@ -68,15 +72,23 @@ $(function() {
   function resetInputs() {
     $("input, textarea").val("");
   }
-  $(document).on("keyup", function(event) {
-    if((event.which !== 37 && event.which !== 39) || !$(event.target).is("input, textarea")) {
+  function changeTabShortcutHandler(event, direction) {
+    if(direction !== undefined || ((event.which === 37 || event.which === 39) && !$(event.target).is("input, textarea"))) {
       var currentTab = 1;
       $(".menuButton").each(function(index) {
         $(this).is(".redbg, .greenbg, .bluebg") && (currentTab = index);
       });
       var mod = (n, m) => ((n % m) + m) %m; // for negative numbers
-      event.which === 37 && $(".menuButton:nth-child(" + (mod(currentTab-1,3)+1) + ")").click();
-      event.which === 39 && $(".menuButton:nth-child(" + ((currentTab+1)%3+1) + ")").click();
+      (direction === false || event.which === 37) && $(".menuButton:nth-child(" + (mod(currentTab-1,3)+1) + ")").click();
+      (direction === true || event.which === 39) && $(".menuButton:nth-child(" + ((currentTab+1)%3+1) + ")").click();
+    }
+  }
+  $(document).on("keyup", changeTabShortcutHandler);
+  swipedetect($("#content")[0], function(direction) {
+    if(direction === "left") {
+      changeTabShortcutHandler({}, false);
+    } else if(direction === "right") {
+      changeTabShortcutHandler({}, true);
     }
   });
 
