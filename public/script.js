@@ -418,7 +418,11 @@ $(function() {
               case 2:
                 error = "Volunteer times invalid.";
                 break;
+              case 3:
+                error = "Need to be authorized to volunteer. Contact Mike Klein Wassink or Jonathan Lam to be authorized as a volunteer.";
+                break;
             }
+            new Modal("Error: " + error, [{option: "Okay", handler: ()=>{}}]);
             addRemoveHandlerRunning = false;
             addRemoveHandler();
             checkOnDuty();
@@ -458,7 +462,7 @@ $(function() {
     toggleSignedIn(true);
     $("#profileName").text(name);
     $("#profileEmail").text(email);
-    formattedPhone = (phone.length === 11 ? phone.slice(0, 1) + " " : "") + "(" + phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
+    formattedPhone = "+" + phone.slice(0, 1) + " (" + phone.slice(-10, -7) + ") " + phone.slice(-7, -4) + " " + phone.slice(-4);
     $("#profilePhone").text(formattedPhone);
     $("#profileAddress").text(address);
     user = {signedIn: true, name: name, email: email, phone: phone, address: address};
@@ -486,6 +490,9 @@ $(function() {
     var password = $("#signupPassword").val();
     var name = $("#signupName").val();
     var phone = $("#signupPhone").val().replace(/[^0-9]/g, "");
+    if(phone.length === 10) {
+      phone = "1" + phone;
+    }
     var address = $("#signupAddress").val().trim();
     $.post("/signup", {
       email: email,
@@ -516,11 +523,18 @@ $(function() {
             error = "Email address is already in use.";
             break;
           case 7:
+            error = "Name already in use.";
+            break;
+          case 8:
+            error = "Phone number already in use.";
+            break;
+          case 9:
             error = "Address is not valid.";
             break;
         }
-        console.log("Sign up error: " + error);
-        $("#signupError").text("Error: " + error);
+        //console.log("Sign up error: " + error);
+        //$("#signupError").text("Error: " + error);
+        new Modal(error, [{option: "Okay", handler: ()=>{}}]);
       } else {
         signIn(email, name, phone, data.address);
       }
@@ -544,8 +558,12 @@ $(function() {
           case 2:
             error = "Password does not match.";
             break;
+          case 3:
+            error = "Recent server restart error. Please reload the page and try again.";
+            break;
         }
-        $("#signinError").text("Error: " + error);
+        //$("#signinError").text("Error: " + error);
+        new Modal(error, [{option: "Okay", handler: ()=>{}}]);
       } else {
         signIn(email, data.name, data.phone, data.address);
       }
