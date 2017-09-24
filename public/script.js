@@ -38,7 +38,7 @@ $(function() {
 
   // detecting swipes
   // src: http://www.javascriptkit.com/javatutors/touchevents2.shtml
-  function swipedetect(e,t){var n,a,u,c,i,o,d,h=e,s=t||function(e){};h.addEventListener("touchstart",function(e){var t=e.changedTouches[0];n="none",dist=0,a=t.pageX,u=t.pageY,d=(new Date).getTime(),e.preventDefault()},!1),h.addEventListener("touchmove",function(e){e.preventDefault()},!1),h.addEventListener("touchend",function(e){var t=e.changedTouches[0];c=t.pageX-a,i=t.pageY-u,(o=(new Date).getTime()-d)<=300&&(Math.abs(c)>=150&&Math.abs(i)<=100?n=c<0?"left":"right":Math.abs(i)>=150&&Math.abs(c)<=100&&(n=i<0?"up":"down")),s(n),e.preventDefault()},!1)}
+  function swipedetect(e,t){var n,a,u,c,i,o,d,h=e,s=t||function(e){};h.addEventListener("touchstart",function(e){var t=e.changedTouches[0];n="none",dist=0,a=t.pageX,u=t.pageY,d=(new Date).getTime()/*,e.preventDefault()*/},!1),h.addEventListener("touchmove",function(e){/*e.preventDefault()*/},!1),h.addEventListener("touchend",function(e){var t=e.changedTouches[0];c=t.pageX-a,i=t.pageY-u,(o=(new Date).getTime()-d)<=300&&(Math.abs(c)>=150&&Math.abs(i)<=100?n=c<0?"left":"right":Math.abs(i)>=150&&Math.abs(c)<=100&&(n=i<0?"up":"down")),s(n)/*,e.preventDefault()*/},!1)}
 
   // modal script
   var Modal = function(text, options) {

@@ -167,7 +167,7 @@ body {
   flex-direction: column;
   flex-wrap: nowrap;
 }
-#requesting, #mission {
+#requesting {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -179,11 +179,14 @@ body {
 #situation {
   flex-grow: 1;
 }
+#mission {
+  flex-grow: 1;
+}
 #mission > p {
-  flex-shrink: 1;
   display: flex;
   flex-direction: row;
   margin: 0;
+  padding: 0.5em 0.25em;
 }
 #mission > p:nth-child(2n) {
   background-color: #ecf0f1;
@@ -232,13 +235,14 @@ body {
 #directionsUrl {
   padding: 0.5em;
   text-align: center;
+  display: block;
   width: 100%;
   text-decoration: none;
   font-weight: bold;
   color: #34495e;
 }
 #requestMap {
-  flex-grow: 1;
+  height: 20em;
 }
 #calendar {
   display: flex;
