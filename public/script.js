@@ -115,18 +115,18 @@ $(function() {
       case 1:
         checkOnDuty();
         $("#header").addClass("redbg");
-        $(".menuButton:nth-of-type(1)").addClass("redbg");
+        $(".menuButton:nth-of-type(2)").addClass("redbg");
         history.pushState({}, null, "/?tab=1");
         break;
       case 2:
         $("#header").addClass("greenbg");
-        $(".menuButton:nth-of-type(2)").addClass("greenbg");
+        $(".menuButton:nth-of-type(3)").addClass("greenbg");
         history.pushState({}, null, "/?tab=2");
         break;
       case 3:
         unsetCalendar();
         $("#header").addClass("bluebg");
-        $(".menuButton:nth-of-type(3)").addClass("bluebg");
+        $(".menuButton:nth-of-type(4)").addClass("bluebg");
         history.pushState({}, null, "/?tab=3");
         break;
     }
@@ -137,15 +137,14 @@ $(function() {
   });
   var match;
   if((match = window.location.href.match(/\?tab\=([123])$/)) !== null) {
-    $(".menuButton:nth-of-type(" + match[1] + ")").click();
-    if(match[1] === "3")
+    $(".menuButton:nth-of-type(" + (parseInt(match[1])+1) + ")").click();
+    if(match[1] === "4")
       setTimeout(unsetCalendar, 500); // fix this
   } else {
-    $(".menuButton").first().click();
+    $(".menuButton:nth-of-type(2)").click();
   }
 
   $(window).resize(function() { 
-    //$("#content").height($(window).height() - $("#header").height() - $("#menu").height());
     $(".tab, .signedIn, .signedOut, #calendar, #requestContainer").height($("#content").height());
     $("#calendarVolunteers").outerHeight($("#content").height() - $("#unsetCalendar").height());
     setCalendar(currentDate);
@@ -555,6 +554,7 @@ $(function() {
       email: email,
       password: password
     }, function(data) {
+      console.log(data);
       if(!data.success) {
         var error;
         switch(data.error) {

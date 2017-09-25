@@ -15,7 +15,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
     <link rel="stylesheet" href="/mobile.css">
-    <link rel="stylesheet" href="/desktop.css" media="(min-width: 1024px)">
+    <link rel="stylesheet" href="/desktop.css" media="(min-width: 1000px)">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,400i,700">
     <link rel="icon" href="/favicon.ico" />
     <!-- iOS web app -->
@@ -33,7 +33,7 @@
     <link href="/img/apple-touch-startup-image-2048x1496.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image"> -->
   </head>
   <body>
-    <div id="header" class="white"></div>
+    <div id="header" class="white mobile"></div>
     <div id="content" class="black">
       <div class="tab" data-tab-id="1" data-tab-name="Profile">
         <div class="signedIn">
@@ -132,10 +132,11 @@
       </div>
     </div>
     <div id="menu" class="white blackbg">
-      <!-- put menu buttons here for switching tabs -->
-      <div data-tab-id="1" class="fa fa-user menuButton"></div>
-      <div data-tab-id="2" class="fa fa-ambulance menuButton"></div>
-      <div data-tab-id="3" class="fa fa-calendar menuButton"></div>
+      <!-- menu buttons for switching tabs -->
+      <div class="desktop" id="title">Safe Rides of Redding and Easton</div>
+      <div data-tab-id="1" class="fa fa-user menuButton"><span class="desktop"> Profile</span></div>
+      <div data-tab-id="2" class="fa fa-ambulance menuButton"><span class="desktop"> Request</span></div>
+      <div data-tab-id="3" class="fa fa-calendar menuButton"><span class="desktop"> Volunteer</span></div>
     </div>
     <!-- Google Maps -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb1594vVZ1GlBBHkqOTHBVKjYsZOKAas4&callback=initMap"></script>

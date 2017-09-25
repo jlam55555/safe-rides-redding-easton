@@ -115,6 +115,9 @@ textarea {
 .modalButton:focus, .modalButton:hover {
   background-color: rgba(127, 140, 141, 0.7) !important;
 }
+.desktop {
+  display: none;
+}
 
 /* main layout */
 body {

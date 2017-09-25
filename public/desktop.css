@@ -1,3 +1,42 @@
+/* general classes */
+.desktop {
+  display: block;
+}
+.mobile {
+  display: none;
+}
+
+/* big elements */
 body, html {
   font-size: 20px;
+}
+body {
+  flex-direction: row-reverse;
+}
+#content {
+  padding: 5em;
+}
+#menu {
+  flex-direction: column;
+  flex-grow: 1;
+}
+#title {
+  padding: 0.5em;
+  font-size: 3em;
+  font-weight: bold;
+}
+.menuButton {
+  flex-grow: 0;
+  padding: 0.5em;
+  text-align: left;
+  padding: 0.5em 2em;
+}
+.menuButton.greenbg, .menuButton.bluebg, .menuButton.redbg {
+  transition: background-color 0.25s, color 0.25s;
+  color: #2c3e50;
+}
+.menuButton > span.desktop {
+  font-weight: bold;
+  display: inline;
+  font-family: raleway;
 }
