@@ -120,7 +120,6 @@ $(function() {
         break;
       case 2:
         $("#header").addClass("greenbg");
-        $("#requestContainer").outerHeight($("#content").height());
         $(".menuButton:nth-of-type(2)").addClass("greenbg");
         history.pushState({}, null, "/?tab=2");
         break;
@@ -144,6 +143,13 @@ $(function() {
   } else {
     $(".menuButton").first().click();
   }
+
+  $(window).resize(function() { 
+    //$("#content").height($(window).height() - $("#header").height() - $("#menu").height());
+    $(".tab, .signedIn, .signedOut, #calendar, #requestContainer").height($("#content").height());
+    $("#calendarVolunteers").outerHeight($("#content").height() - $("#unsetCalendar").height());
+    setCalendar(currentDate);
+  }).resize();
 
   // profile tab details
   $("#signupContainer").hide();
