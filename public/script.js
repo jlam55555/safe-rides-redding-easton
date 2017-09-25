@@ -79,8 +79,8 @@ $(function() {
         $(this).is(".redbg, .greenbg, .bluebg") && (currentTab = index);
       });
       var mod = (n, m) => ((n % m) + m) %m; // for negative numbers
-      (direction === false || event.which === 37) && $(".menuButton:nth-child(" + (mod(currentTab-1,3)+1) + ")").click();
-      (direction === true || event.which === 39) && $(".menuButton:nth-child(" + ((currentTab+1)%3+1) + ")").click();
+      (direction === false || event.which === 37) && $(".menuButton:nth-child(" + (mod(currentTab-1,3)+2) + ")").click();
+      (direction === true || event.which === 39) && $(".menuButton:nth-child(" + ((currentTab+1)%3+2) + ")").click();
     }
   }
   $(document).on("keyup", changeTabShortcutHandler);
@@ -121,6 +121,11 @@ $(function() {
       case 2:
         $("#header").addClass("greenbg");
         $(".menuButton:nth-of-type(3)").addClass("greenbg");
+        setTimeout(function() {
+          map.fitBounds(bounds);
+          map.setCenter(bounds.getCenter());
+          google.maps.event.trigger(map, "resize");
+        }, 500);
         history.pushState({}, null, "/?tab=2");
         break;
       case 3:
@@ -132,7 +137,7 @@ $(function() {
     }
   });
   $(".changeTab").click(function() {
-    $(".menuButton:nth-of-type(" + $(this).data("tab-id") + ")").click();
+    $(".menuButton:nth-of-type(" + (parseInt($(this).data("tab-id"))+1) + ")").click();
     resetInputs();
   });
   var match;
@@ -554,7 +559,6 @@ $(function() {
       email: email,
       password: password
     }, function(data) {
-      console.log(data);
       if(!data.success) {
         var error;
         switch(data.error) {
