@@ -185,6 +185,11 @@ body {
 #mission {
   flex-grow: 1;
 }
+#situationText {
+  padding: 1em;
+  background-color: #e74c3c;
+  color: #ecf0f1;
+}
 #mission > p {
   display: flex;
   flex-direction: row;

@@ -179,6 +179,7 @@ $(function() {
   var timeFormat = new Intl.DateTimeFormat("en-US", {hour: "2-digit", minute: "2-digit", second: "2-digit"});
   socket.on("missionData", function(data) {
     createMarkers([data.start, data.end, data.meeting]);
+    $("#situationText").text("Note from ride requester: " + data.situation);
     $(".driver1").text(data.driver1.replace(/ .*$/g, ""));
     $(".driver2").text(data.driver2.replace(/ .*$/g, ""));
     $(".drivee").text(data.drivee.replace(/ .*/g, ""));

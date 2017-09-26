@@ -146,7 +146,8 @@ io.on("connection", function(socket) {
                         role: role,
                         start: data.startplace,
                         end: data.endplace,
-                        meeting: data.meetingplace
+                        meeting: data.meetingplace,
+                        situation: data.situation
                       });
                     });
                   });
