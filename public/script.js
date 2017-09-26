@@ -122,8 +122,10 @@ $(function() {
         $("#header").addClass("greenbg");
         $(".menuButton:nth-of-type(3)").addClass("greenbg");
         setTimeout(function() {
-          map.fitBounds(bounds);
-          map.setCenter(bounds.getCenter());
+          try {
+            map.fitBounds(bounds);
+            map.setCenter(bounds.getCenter());
+          } catch(e) {}
           google.maps.event.trigger(map, "resize");
         }, 500);
         history.pushState({}, null, "/?tab=2");
@@ -204,15 +206,15 @@ $(function() {
             confirmId = i+1;
           }
           first = false;
-          $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-spinner fa-spin");
+          $("#mission > p:nth-child(" + (i+2) + ") > i").removeClass("fa-ellipsis-h").addClass("fa-spinner fa-spin");
         }
       } else {
-        $("#mission > p:nth-child(" + (i+1) + ") > i").removeClass("fa-ellipsis-h fa-spinner fa-spin").addClass("fa-check");
-        $("#mission > p:nth-child(" + (i+1) + ") .timestamp").text(timeFormat.format(new Date(data.waypoints[i])));
+        $("#mission > p:nth-child(" + (i+2) + ") > i").removeClass("fa-ellipsis-h fa-spinner fa-spin").addClass("fa-check");
+        $("#mission > p:nth-child(" + (i+2) + ") .timestamp").text(timeFormat.format(new Date(data.waypoints[i])));
       }
     }
     $("#mission > p > span").removeClass("confirm");
-    confirmId && $("#mission > p:nth-child(" + confirmId + ") > span").addClass("confirm");
+    confirmId && $("#mission > p:nth-child(" + (confirmId+1) + ") > span").addClass("confirm");
   });
   $(".confirmButton").click(function() {
     socket.emit("confirm", $(this).data("confirm"));
@@ -282,6 +284,7 @@ $(function() {
       $(".volunteerStripes").css({
         maxHeight: blockSize
       });
+      if(calendar[date] === undefined) return; // fix this
       calendar[date] = calendar[date].sort(function(a, b) {
         if(a.email === user.email) {
           return -1;
